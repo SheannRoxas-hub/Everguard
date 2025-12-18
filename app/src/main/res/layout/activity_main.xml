@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:fontFamily="@font/poppins_medium"
+                android:fontFamily="@font/poppins_bold"
                 android:text="@string/everguard"
                 android:textColor="#014D85"
                 android:textSize="30sp"
@@ -96,7 +96,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
             android:textColorHint="#7C7C7C"
-            app:passwordToggleEnabled="true">
+            app:passwordToggleEnabled="true"
+            app:hintEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password_input"
