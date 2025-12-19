@@ -5,11 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.*
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.widget.doOnTextChanged
 import kotlin.jvm.java
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,15 +21,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var confirmPasswordInput: EditText
     private lateinit var termsCheckbox: CheckBox
     private lateinit var getStartedButton: Button
+    private lateinit var usernameLayout: TextInputLayout
+    private lateinit var emailLayout: TextInputLayout
+    private lateinit var passwordLayout: TextInputLayout
+    private lateinit var confirmPasswordLayout: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, 0, 0, systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
@@ -42,11 +47,42 @@ class MainActivity : AppCompatActivity() {
         confirmPasswordInput = findViewById(R.id.confirm_password_input)
         termsCheckbox = findViewById(R.id.terms_and_conditions_checkbox)
         getStartedButton = findViewById(R.id.registration_btn)
+        usernameLayout = findViewById(R.id.username_layout)
+        emailLayout = findViewById(R.id.email_layout)
+        passwordLayout = findViewById(R.id.password_layout)
+        confirmPasswordLayout = findViewById (R.id.confirm_password_layout)
     }
 
     private fun setupListeners() {
         getStartedButton.setOnClickListener {
             handleRegistration()
+        }
+        usernameInput.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank()) {
+                clearError(usernameLayout)
+            }
+        }
+
+        emailInput.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank() &&
+                Patterns.EMAIL_ADDRESS.matcher(text.toString()).matches()
+            ) {
+                clearError(emailLayout)
+            }
+        }
+
+        passwordInput.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank() && text.length >= 6) {
+                clearError(passwordLayout)
+            }
+        }
+
+        confirmPasswordInput.doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank() &&
+                text.toString() == passwordInput.text.toString()
+            ) {
+                clearError(confirmPasswordLayout)
+            }
         }
     }
 
@@ -58,37 +94,37 @@ class MainActivity : AppCompatActivity() {
 
         when {
             username.isEmpty() -> {
-                usernameInput.error = "Username is required"
+                showError(usernameLayout, "Username is required")
                 usernameInput.requestFocus()
             }
 
             email.isEmpty() -> {
-                emailInput.error = "Email is required"
+                showError(emailLayout, "Email is required")
                 emailInput.requestFocus()
             }
 
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                emailInput.error = "Invalid email format"
+                showError(emailLayout, "Invalid email required")
                 emailInput.requestFocus()
             }
 
             password.isEmpty() -> {
-                passwordInput.error = "Password is required"
+                showError(passwordLayout, "Password is required")
                 passwordInput.requestFocus()
             }
 
             password.length < 6 -> {
-                passwordInput.error = "Password must be at least 6 characters"
+                showError(passwordLayout, "Password must be at least 6 characters")
                 passwordInput.requestFocus()
             }
 
             confirmPassword.isEmpty() -> {
-                confirmPasswordInput.error = "Please confirm your password"
+                showError(confirmPasswordLayout, "Please confirm your password")
                 confirmPasswordInput.requestFocus()
             }
 
             password != confirmPassword -> {
-                confirmPasswordInput.error = "Passwords do not match"
+                confirmPasswordLayout.error = "Passwords do not match"
                 confirmPasswordInput.requestFocus()
             }
 
@@ -114,6 +150,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun clearError(layout: TextInputLayout) {
+        layout.error = null
+        layout.isErrorEnabled = false
+    }
+
+    private fun showError (layout: TextInputLayout, message: String) {
+        layout.error = message
+        layout.isErrorEnabled = true
+    }
+
     private fun onRegistrationSuccess(username: String, email: String) {
         Toast.makeText(
             this,

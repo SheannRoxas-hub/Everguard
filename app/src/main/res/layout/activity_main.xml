@@ -5,7 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -14,26 +13,26 @@
         android:background="@null"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        >
+        tools:ignore="UselessParent">
 
         <ImageView
             android:layout_width="180dp"
             android:layout_height="100dp"
             android:layout_gravity="start"
             android:importantForAccessibility="no"
-            android:src="@drawable/reg_designtop"
-            />
+            android:src="@drawable/reg_designtop" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:contentDescription="@string/everguard_logo"
                 android:src="@drawable/blue_logo" />
 
@@ -41,20 +40,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:fontFamily="@font/poppins_bold"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/everguard"
                 android:textColor="#014D85"
-                android:textSize="25sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="72dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/poppins_bold"
             android:text="@string/welcome"
             android:textColor="#014D85"
-            android:textSize="45sp" />
+            android:textSize="50sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -68,95 +68,81 @@
             android:layout_width="330dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:textColorHint="#7C7C7C"
-            app:hintEnabled="false"
-            >
+            app:boxBackgroundMode="outline"
+            app:boxStrokeWidth="2dp"
+            app:errorEnabled="true"
+            app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/username_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_corner"
                 android:hint="@string/username"
-                android:importantForAutofill="no"
                 android:inputType="text"
-                android:fontFamily="@font/poppins_medium"
                 android:padding="11dp"
-                android:textColorHint="#7C7C7C"
-                android:textSize="17sp"
-                tools:ignore="TouchTargetSizeCheck"/>
-
+                android:textSize="17sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email_layout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            android:textColorHint="#7C7C7C"
-            app:hintEnabled="false"
-            >
+            android:layout_marginTop="12dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeWidth="2dp"
+            app:errorEnabled="true"
+            app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/email_input"
-                android:layout_width="330dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints="emailAddress"
-                android:background="@drawable/rounded_corner"
                 android:hint="@string/email"
-                android:fontFamily="@font/poppins_medium"
                 android:inputType="textEmailAddress"
                 android:padding="11dp"
-                android:textColorHint="#7C7C7C"
-                android:textSize="17sp"
-                tools:ignore="TouchTargetSizeCheck" />
-
+                android:textSize="17sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_layout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            app:passwordToggleEnabled="true"
-            app:hintEnabled="false"
-            >
+            android:layout_marginTop="12dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeWidth="2dp"
+            app:errorEnabled="true"
+            app:endIconMode="password_toggle"
+            app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints="password"
-                android:background="@drawable/rounded_corner"
                 android:hint="@string/password"
-                android:fontFamily="@font/poppins_medium"
                 android:inputType="textPassword"
-                android:textColorHint="#7C7C7C"
                 android:padding="11dp"
-                android:textSize="17sp" />
-
+                android:textSize="17sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/confirm_password_layout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            app:passwordToggleEnabled="true"
-            app:hintEnabled="false">
+            android:layout_marginTop="12dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeWidth="2dp"
+            app:errorEnabled="true"
+            app:endIconMode="password_toggle"
+            app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/confirm_password_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints="password"
-                android:background="@drawable/rounded_corner"
                 android:hint="@string/confirm_password"
-                android:fontFamily="@font/poppins_medium"
-                android:textColorHint="#7C7C7C"
                 android:inputType="textPassword"
                 android:padding="11dp"
-                android:textSize="17sp" />
+                android:textSize="17sp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -166,18 +152,17 @@
             android:layout_height="wrap_content"
             android:gravity="start|center_vertical"
             android:text="@string/terms_and_conditions"
-            android:textColor="#7C7C7C"
+            android:textColor="@color/black"
             android:textSize="12sp"
-            android:textStyle="bold"
-            app:buttonTint ="#7C7C7C"/>
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/registration_btn"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:backgroundTint="#014C84"
             android:padding="10dp"
-            android:layout_marginTop="15dp"
             android:text="@string/get_started"
             android:textColor="@color/white"
             android:textSize="17sp" />
