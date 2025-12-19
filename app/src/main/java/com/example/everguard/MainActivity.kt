@@ -1,5 +1,7 @@
 package com.example.everguard
 
+import android.R.id.input
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.*
@@ -7,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import kotlin.jvm.java
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,8 +19,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var confirmPasswordInput: EditText
     private lateinit var termsCheckbox: CheckBox
     private lateinit var getStartedButton: Button
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -101,16 +102,23 @@ class MainActivity : AppCompatActivity() {
 
             else -> {
                 onRegistrationSuccess(username, email)
+
+                val toProfile = Intent(this, ProfileActivity::class.java)
+
+                toProfile.putExtra("username", username)
+                toProfile.putExtra("email", email)
+                toProfile.putExtra("password", password)
+
+                startActivity(toProfile)
+                finish()
             }
         }
     }
-
     private fun onRegistrationSuccess(username: String, email: String) {
         Toast.makeText(
             this,
             "Welcome, $username!",
             Toast.LENGTH_LONG
         ).show()
-
     }
 }
