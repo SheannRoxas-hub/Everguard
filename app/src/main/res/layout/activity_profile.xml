@@ -22,21 +22,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Back Arrow Icon -->
+
+    <!-- Everguard Logo and Text -->
+
+    <!-- Profile Image -->
+
     <ImageView
         android:id="@+id/backArrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="34dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="17dp"
-        android:src="@drawable/outline_arrow_left_alt_24"
+        android:layout_marginTop="20dp"
         android:contentDescription="@string/back_arrow"
+        android:src="@drawable/outline_arrow_left_alt_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Everguard Logo and Text -->
     <TextView
-        style="@style/TextAppearance.Everguard.Title.White"
         android:id="@+id/everguard_text"
+        style="@style/TextAppearance.Everguard.Title.White"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="5dp"
@@ -45,12 +49,10 @@
         app:drawableStartCompat="@drawable/resized_white_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.018" />
+        app:layout_constraintVertical_bias="0.027" />
 
-    <!-- Profile Image -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/profileImage"
         android:layout_width="160dp"
@@ -160,7 +162,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
-            android:layout_width="355dp"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:background="@null"
             android:drawablePadding="12dp"
