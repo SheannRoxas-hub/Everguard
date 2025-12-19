@@ -6,12 +6,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    tools:ignore="VisualLintBounds">
 
     <!-- Top Blue Header -->
     <ImageView
         android:id="@+id/header"
-        android:layout_width="417dp"
+        android:layout_width="match_parent"
         android:layout_height="295dp"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
@@ -26,53 +27,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="17dp"
         android:src="@drawable/outline_arrow_left_alt_24"
-        android:contentDescription="Back"
+        android:contentDescription="@string/back_arrow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#FFFFFF" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Everguard Logo and Text -->
-
-    <!-- Profile Image -->
-
-    <LinearLayout
-        android:id="@+id/everguard_logo_container"
+    <TextView
+        style="@style/TextAppearance.Everguard.Title.White"
+        android:id="@+id/everguard_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:drawablePadding="5dp"
+        android:text="@string/everguard"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/resized_white_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.018">
+        app:layout_constraintVertical_bias="0.018" />
 
-        <ImageView
-            android:id="@+id/white_logo_img"
-            android:layout_width="27dp"
-            android:layout_height="27dp"
-            android:contentDescription="@null"
-            android:src="@drawable/white_logo" />
-
-        <TextView
-            android:id="@+id/everguard_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:fontFamily="@font/poppins_bold"
-            android:text="Everguard"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
+    <!-- Profile Image -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/profileImage"
-        android:layout_width="145dp"
-        android:layout_height="150dp"
-        android:contentDescription="Profile Picture"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:contentDescription="@string/sample_pfp"
         android:scaleType="centerCrop"
         android:src="@drawable/pfp"
         app:layout_constraintBottom_toBottomOf="@id/header"
@@ -84,30 +67,28 @@
 
     <!-- Hello User -->
     <TextView
+        style="@style/TextAppearance.Everguard.Title.Blue"
         android:id="@+id/helloUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppins_bold"
-        android:text="Hello User!"
-        android:textColor="#0F5FA7"
+        android:text="@string/sample_user"
         android:textSize="30sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileImage" />
 
     <!-- Profile Label -->
     <TextView
+        style="@style/TextAppearance.Everguard.Title.Blue"
         android:id="@+id/profileLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:fontFamily="@font/poppins_medium"
-        android:text="Profile"
+        android:textColor="@color/light_gray"
+        android:text="@string/profile"
         android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/helloUser" />
 
@@ -119,9 +100,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="15dp"
         android:drawablePadding="10dp"
-        android:fontFamily="@font/poppins_medium"
         android:textSize="15sp"
-        android:text="Email"
+        android:text="@string/email"
         app:drawableStartCompat="@drawable/ic_email_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileLabel" />
@@ -129,14 +109,13 @@
     <!-- Email Field -->
     <TextView
         android:id="@+id/email"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:drawablePadding="12dp"
-        android:fontFamily="@font/poppins_medium"
         android:padding="12dp"
-        android:text="user123@gmail.com"
-        android:textColor="#7C7C7C"
+        android:text="@string/sample_email"
+        android:textColor="@color/light_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView" />
@@ -144,7 +123,7 @@
     <!-- Separator below Email -->
     <View
         android:id="@+id/emailSeparator"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginHorizontal="32dp"
         android:background="#7C7C7C"
@@ -155,14 +134,13 @@
     <!-- Password Label -->
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:drawablePadding="10dp"
-        android:fontFamily="@font/poppins_medium"
         android:textSize="15sp"
-        android:text="Password"
+        android:text="@string/password"
         app:drawableStartCompat="@drawable/ic_lock_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/emailSeparator" />
@@ -182,17 +160,16 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
-            android:layout_width="match_parent"
+            android:layout_width="355dp"
             android:layout_height="wrap_content"
             android:background="@null"
             android:drawablePadding="12dp"
             android:enabled="false"
-            android:fontFamily="@font/poppins_medium"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:inputType="textPassword"
             android:padding="12dp"
-            android:text="pogilangako123"
+            android:text="@string/sample_password"
             android:textColor="#7C7C7C" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -200,7 +177,7 @@
     <!-- Separator below Password -->
     <View
         android:id="@+id/passwordSeparator"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginHorizontal="32dp"
         android:background="#7C7C7C"

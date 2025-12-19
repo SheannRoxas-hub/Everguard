@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Global Style for all your Input Fields -->
+    <style name="Widget.Everguard.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxStrokeColor">@color/everguard_blue_dark</item>
+        <item name="hintTextColor">@color/everguard_blue_dark</item>
+        <item name="android:textColorHint">@color/light_gray</item>
+        <item name="android:textColor">@color/black</item>
+        <!-- This removes the error icon that overlaps the password eye -->
+        <item name="errorIconDrawable">@null</item>
+    </style>
+
+    <style name="Widget.Everguard.TextInputEditText" parent="@style/Widget.Design.TextInputEditText">
+        <!-- 1. Text color (fixes accessibility/contrast) -->
+        <item name="android:textColor">@color/black</item>
+
+        <!-- 2. Font (assuming Poppins is in your res/font folder) -->
+        <item name="android:fontFamily">@font/poppins_medium</item>
+
+        <!-- 3. Size and Padding -->
+        <item name="android:textSize">17sp</item>
+        <item name="android:padding">11dp</item>
+
+        <!-- 4. Important: Remove default background to avoid line clashes -->
+        <item name="android:background">@null</item>
+    </style>
+</resources>

@@ -2,23 +2,26 @@ package com.example.everguard
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.everguard.databinding.ActivityProfileBinding
 
 class ProfileActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityProfileBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_profile)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.backArrow)) { v, insets ->
+        binding = ActivityProfileBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.backArrow) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
 
@@ -28,20 +31,27 @@ class ProfileActivity : AppCompatActivity() {
         val password = intent.getStringExtra("password")
 
         //value set from the value extracted
-        val usernameTextView = findViewById<TextView>(R.id.helloUser)
-        usernameTextView.setText("Hello, $username!")
+        val usernameTextView = binding.helloUser
+        usernameTextView.text = "Hello, $username!"
 
-        val emailTextView = findViewById<TextView>(R.id.email)
-        emailTextView.setText(email)
+        val emailTextView = binding.email
+        emailTextView.text = email
 
-        val passwordTextView = findViewById<EditText>(R.id.password)
+        val passwordTextView = binding.password
         passwordTextView.setText(password)
 
         //adds the back function to registration
-        val backArrow = findViewById<ImageView>(R.id.backArrow)
+        val backArrow = binding.backArrow
         backArrow.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+
+            val options = android.app.ActivityOptions.makeCustomAnimation(
+                this,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
+
+            startActivity(intent, options.toBundle())
         }
     }
 }

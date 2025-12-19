@@ -1,134 +1,113 @@
 package com.example.everguard
 
-import android.R.id.input
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.*
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.widget.doOnTextChanged
+import com.example.everguard.databinding.ActivityMainBinding
 import kotlin.jvm.java
 
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var usernameInput: EditText
-    private lateinit var emailInput: EditText
-    private lateinit var passwordInput: EditText
-    private lateinit var confirmPasswordInput: EditText
-    private lateinit var termsCheckbox: CheckBox
-    private lateinit var getStartedButton: Button
-    private lateinit var usernameLayout: TextInputLayout
-    private lateinit var emailLayout: TextInputLayout
-    private lateinit var passwordLayout: TextInputLayout
-    private lateinit var confirmPasswordLayout: TextInputLayout
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        enableEdgeToEdge()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
 
-        initViews()
         setupListeners()
     }
 
-    private fun initViews() {
-        usernameInput = findViewById(R.id.username_input)
-        emailInput = findViewById(R.id.email_input)
-        passwordInput = findViewById(R.id.password_input)
-        confirmPasswordInput = findViewById(R.id.confirm_password_input)
-        termsCheckbox = findViewById(R.id.terms_and_conditions_checkbox)
-        getStartedButton = findViewById(R.id.registration_btn)
-        usernameLayout = findViewById(R.id.username_layout)
-        emailLayout = findViewById(R.id.email_layout)
-        passwordLayout = findViewById(R.id.password_layout)
-        confirmPasswordLayout = findViewById (R.id.confirm_password_layout)
-    }
-
     private fun setupListeners() {
-        getStartedButton.setOnClickListener {
+        binding.registrationBtn.setOnClickListener {
             handleRegistration()
         }
-        usernameInput.doOnTextChanged { text, _, _, _ ->
+        binding.usernameInput.doOnTextChanged { text, _, _, _ ->
             if (!text.isNullOrBlank()) {
-                clearError(usernameLayout)
+                clearError(binding.usernameLayout)
             }
         }
 
-        emailInput.doOnTextChanged { text, _, _, _ ->
+        binding.emailInput.doOnTextChanged { text, _, _, _ ->
             if (!text.isNullOrBlank() &&
                 Patterns.EMAIL_ADDRESS.matcher(text.toString()).matches()
             ) {
-                clearError(emailLayout)
+                clearError(binding.emailLayout)
             }
         }
 
-        passwordInput.doOnTextChanged { text, _, _, _ ->
+        binding.passwordInput.doOnTextChanged { text, _, _, _ ->
             if (!text.isNullOrBlank() && text.length >= 6) {
-                clearError(passwordLayout)
+                clearError(binding.passwordLayout)
             }
         }
 
-        confirmPasswordInput.doOnTextChanged { text, _, _, _ ->
+        binding.confirmPasswordInput.doOnTextChanged { text, _, _, _ ->
             if (!text.isNullOrBlank() &&
-                text.toString() == passwordInput.text.toString()
+                text.toString() == binding.passwordInput.text.toString()
             ) {
-                clearError(confirmPasswordLayout)
+                clearError(binding.confirmPasswordLayout)
             }
         }
     }
 
     private fun handleRegistration() {
-        val username = usernameInput.text.toString().trim()
-        val email = emailInput.text.toString().trim()
-        val password = passwordInput.text.toString()
-        val confirmPassword = confirmPasswordInput.text.toString()
+        val username = binding.usernameInput.text.toString().trim()
+        val email = binding.emailInput.text.toString().trim()
+        val password = binding.passwordInput.text.toString()
+        val confirmPassword = binding.confirmPasswordInput.text.toString()
 
         when {
             username.isEmpty() -> {
-                showError(usernameLayout, "Username is required")
-                usernameInput.requestFocus()
+                showError(binding.usernameLayout, "Username is required")
+                binding.usernameInput.requestFocus()
             }
 
             email.isEmpty() -> {
-                showError(emailLayout, "Email is required")
-                emailInput.requestFocus()
+                showError(binding.emailLayout, "Email is required")
+                binding.emailInput.requestFocus()
             }
 
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                showError(emailLayout, "Invalid email required")
-                emailInput.requestFocus()
+                showError(binding.emailLayout, "Invalid email required")
+                binding.emailInput.requestFocus()
             }
 
             password.isEmpty() -> {
-                showError(passwordLayout, "Password is required")
-                passwordInput.requestFocus()
+                showError(binding.passwordLayout, "Password is required")
+                binding.passwordInput.requestFocus()
             }
 
             password.length < 6 -> {
-                showError(passwordLayout, "Password must be at least 6 characters")
-                passwordInput.requestFocus()
+                showError(binding.passwordLayout, "Password must be at least 6 characters")
+                binding.passwordInput.requestFocus()
             }
 
             confirmPassword.isEmpty() -> {
-                showError(confirmPasswordLayout, "Please confirm your password")
-                confirmPasswordInput.requestFocus()
+                showError(binding.confirmPasswordLayout, "Please confirm your password")
+                binding.confirmPasswordInput.requestFocus()
             }
 
             password != confirmPassword -> {
-                confirmPasswordLayout.error = "Passwords do not match"
-                confirmPasswordInput.requestFocus()
+                binding.confirmPasswordLayout.error = "Passwords do not match"
+                binding.confirmPasswordInput.requestFocus()
             }
 
-            !termsCheckbox.isChecked -> {
+            !binding.termsCheckbox.isChecked -> {
                 Toast.makeText(
                     this,
                     "You must agree to the Terms & Conditions",
@@ -137,7 +116,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             else -> {
-                onRegistrationSuccess(username, email)
+                onRegistrationSuccess(username)
 
                 val toProfile = Intent(this, ProfileActivity::class.java)
 
@@ -145,7 +124,13 @@ class MainActivity : AppCompatActivity() {
                 toProfile.putExtra("email", email)
                 toProfile.putExtra("password", password)
 
-                startActivity(toProfile)
+                val options = android.app.ActivityOptions.makeCustomAnimation(
+                    this,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+
+                startActivity(toProfile, options.toBundle())
                 finish()
             }
         }
@@ -161,7 +146,7 @@ class MainActivity : AppCompatActivity() {
         layout.isErrorEnabled = true
     }
 
-    private fun onRegistrationSuccess(username: String, email: String) {
+    private fun onRegistrationSuccess(username: String) {
         Toast.makeText(
             this,
             "Welcome, $username!",

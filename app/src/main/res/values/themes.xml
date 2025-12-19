@@ -4,11 +4,20 @@
         <!-- Make system bars transparent -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-
-        <!-- Optional: If your background is light, make the status bar icons dark -->
         <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Assign the Input Style -->
+        <item name="textInputStyle">@style/Widget.Everguard.TextInputLayout</item>
+        <item name="editTextStyle">@style/Widget.Everguard.TextInputEditText</item>
+
+
+        <!-- Assign Primary Colors -->
+        <item name="colorPrimary">@color/everguard_blue_dark</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Set Default Font for the whole app -->
+        <item name="fontFamily">@font/poppins_medium</item>
     </style>
 
-    <style name="Theme.Everguard" parent="Base.Theme.Everguard" />
-
-        </resources>
+</resources>

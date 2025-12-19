@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null"
+        android:background="#FFFFFF"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         tools:ignore="UselessParent">
@@ -25,36 +25,33 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:contentDescription="@string/everguard_logo"
                 android:src="@drawable/blue_logo" />
 
             <TextView
+                style="@style/TextAppearance.Everguard.Title.Blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:fontFamily="@font/poppins_medium"
                 android:text="@string/everguard"
-                android:textColor="#014D85"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+                android:textSize="25sp" />
         </LinearLayout>
 
+
         <TextView
+            style="@style/TextAppearance.Everguard.Title.Blue"
             android:layout_width="wrap_content"
-            android:layout_height="72dp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/poppins_bold"
+            android:layout_height="wrap_content"
             android:text="@string/welcome"
-            android:textColor="#014D85"
-            android:textSize="50sp" />
+            android:textSize="45sp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -67,10 +64,7 @@
             android:id="@+id/username_layout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            app:boxBackgroundMode="outline"
-            app:boxStrokeWidth="2dp"
-            app:errorEnabled="true"
+            android:layout_marginTop="25dp"
             app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -79,18 +73,17 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/username"
                 android:inputType="text"
-                android:padding="11dp"
-                android:textSize="17sp"/>
+                android:padding="9dp"
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email_layout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxStrokeWidth="2dp"
-            app:errorEnabled="true"
+            android:layout_marginTop="7dp"
             app:errorIconDrawable="@null">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -99,18 +92,17 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
-                android:padding="11dp"
-                android:textSize="17sp"/>
+                android:padding="9dp"
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_layout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxStrokeWidth="2dp"
-            app:errorEnabled="true"
+            android:layout_marginTop="7dp"
             app:endIconMode="password_toggle"
             app:errorIconDrawable="@null">
 
@@ -120,18 +112,17 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
                 android:inputType="textPassword"
-                android:padding="11dp"
-                android:textSize="17sp"/>
+                android:padding="9dp"
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/confirm_password_layout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            app:boxStrokeWidth="2dp"
-            app:errorEnabled="true"
+            android:layout_marginTop="7dp"
             app:endIconMode="password_toggle"
             app:errorIconDrawable="@null">
 
@@ -141,14 +132,15 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/confirm_password"
                 android:inputType="textPassword"
-                android:padding="11dp"
-                android:textSize="17sp"/>
+                android:padding="9dp"
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
-            android:id="@+id/terms_and_conditions_checkbox"
-            android:layout_width="330dp"
+            android:id="@+id/terms_checkbox"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:gravity="start|center_vertical"
             android:text="@string/terms_and_conditions"
@@ -158,10 +150,9 @@
 
         <Button
             android:id="@+id/registration_btn"
-            android:layout_width="330dp"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:backgroundTint="#014C84"
             android:padding="10dp"
             android:text="@string/get_started"
             android:textColor="@color/white"
@@ -170,24 +161,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:text="@string/Login_option"
+            android:textColor="@color/light_gray"
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-
-        <ImageView
-            android:layout_width="173dp"
-            android:layout_height="100dp"
-            android:layout_gravity="end"
-            android:importantForAccessibility="no"
-            android:src="@drawable/reg_designbottom" />
-
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="173dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:importantForAccessibility="no"
+        android:src="@drawable/reg_designbottom" />
 
 </RelativeLayout>
