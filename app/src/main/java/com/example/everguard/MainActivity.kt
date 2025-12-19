@@ -1,5 +1,7 @@
 package com.example.everguard
 
+import android.R.id.input
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.*
@@ -8,6 +10,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.widget.doOnTextChanged
+import kotlin.jvm.java
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -134,6 +138,15 @@ class MainActivity : AppCompatActivity() {
 
             else -> {
                 onRegistrationSuccess(username, email)
+
+                val toProfile = Intent(this, ProfileActivity::class.java)
+
+                toProfile.putExtra("username", username)
+                toProfile.putExtra("email", email)
+                toProfile.putExtra("password", password)
+
+                startActivity(toProfile)
+                finish()
             }
         }
     }
@@ -154,6 +167,5 @@ class MainActivity : AppCompatActivity() {
             "Welcome, $username!",
             Toast.LENGTH_LONG
         ).show()
-
     }
 }
