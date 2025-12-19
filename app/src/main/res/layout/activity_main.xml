@@ -36,7 +36,7 @@
                 android:src="@drawable/blue_logo" />
 
             <TextView
-                style="@style/TextAppearance.Everguard.Title"
+                style="@style/TextAppearance.Everguard.Title.Blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -46,7 +46,7 @@
 
 
         <TextView
-            style="@style/TextAppearance.Everguard.Title"
+            style="@style/TextAppearance.Everguard.Title.Blue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/welcome"
@@ -139,7 +139,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
-            android:id="@+id/terms_and_conditions_checkbox"
+            android:id="@+id/terms_checkbox"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:gravity="start|center_vertical"

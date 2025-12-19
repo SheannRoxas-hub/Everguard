@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="CircleImage">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
-    </style>
 
-    <style name="TextAppearance.Everguard.Title" parent="TextAppearance.MaterialComponents.Headline3">
+
+    <style name="TextAppearance.Everguard.Title.Blue" parent="TextAppearance.MaterialComponents.Headline3">
         <item name="fontFamily">@font/poppins_bold</item>
         <item name="android:textColor">@color/everguard_blue_dark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Everguard.Title.White" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="fontFamily">@font/poppins_bold</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
     </style>
 

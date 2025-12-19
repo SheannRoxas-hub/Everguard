@@ -1,6 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
+    <string name="app_name">Everguard</string>
     <string name="everguard">Everguard</string>
     <string name="username">Username</string>
     <string name="email">Email</string>
@@ -14,4 +15,14 @@
     <string name="terms_and_conditions"><![CDATA[I agree to the Terms & Conditions.]]></string>
     <string name="get_started">Get Started</string>
     <string name="Login_option">Already have an account?</string>
+
+    <!-- Profile -->
+    <string name="back_arrow">Back Arrow</string>
+    <string name="sample_email">user123@gmail.com</string>
+    <string name="sample_user">Hello, User!</string>
+    <string name="sample_password">userpass123</string>
+    <string name="sample_pfp">Profile Picture</string>
+    <string name="profile">Profile</string>
+
+
 </resources>
