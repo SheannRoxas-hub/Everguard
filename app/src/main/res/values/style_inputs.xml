@@ -10,8 +10,24 @@
         <item name="boxStrokeWidth">2dp</item>
         <item name="boxStrokeColor">@color/everguard_blue_dark</item>
         <item name="hintTextColor">@color/everguard_blue_dark</item>
-
+        <item name="android:textColorHint">@color/light_gray</item>
+        <item name="android:textColor">@color/black</item>
         <!-- This removes the error icon that overlaps the password eye -->
         <item name="errorIconDrawable">@null</item>
+    </style>
+
+    <style name="Widget.Everguard.TextInputEditText" parent="@style/Widget.Design.TextInputEditText">
+        <!-- 1. Text color (fixes accessibility/contrast) -->
+        <item name="android:textColor">@color/black</item>
+
+        <!-- 2. Font (assuming Poppins is in your res/font folder) -->
+        <item name="android:fontFamily">@font/poppins_medium</item>
+
+        <!-- 3. Size and Padding -->
+        <item name="android:textSize">17sp</item>
+        <item name="android:padding">11dp</item>
+
+        <!-- 4. Important: Remove default background to avoid line clashes -->
+        <item name="android:background">@null</item>
     </style>
 </resources>

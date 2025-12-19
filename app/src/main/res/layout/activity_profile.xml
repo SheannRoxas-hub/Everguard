@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,17 +25,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="17dp"
         android:src="@drawable/outline_arrow_left_alt_24"
         android:contentDescription="Back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#FFFFFF" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Everguard Logo and Text -->
-
-    <!-- Profile Image -->
-
     <LinearLayout
         android:id="@+id/everguard_logo_container"
         android:layout_width="wrap_content"
@@ -68,10 +63,11 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Profile Image -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/profileImage"
-        android:layout_width="145dp"
-        android:layout_height="150dp"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
         android:contentDescription="Profile Picture"
         android:scaleType="centerCrop"
         android:src="@drawable/pfp"
@@ -84,30 +80,29 @@
 
     <!-- Hello User -->
     <TextView
+        style="@style/TextAppearance.Everguard.Title"
         android:id="@+id/helloUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/poppins_bold"
-        android:text="Hello User!"
-        android:textColor="#0F5FA7"
+        android:text="Hello, User!"
         android:textSize="30sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileImage" />
 
     <!-- Profile Label -->
     <TextView
+        style="@style/TextAppearance.Everguard.Title"
         android:id="@+id/profileLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:fontFamily="@font/poppins_medium"
+        android:textColor="@color/light_gray"
         android:text="Profile"
         android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/helloUser" />
 
@@ -119,7 +114,6 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="15dp"
         android:drawablePadding="10dp"
-        android:fontFamily="@font/poppins_medium"
         android:textSize="15sp"
         android:text="Email"
         app:drawableStartCompat="@drawable/ic_email_24"
@@ -129,11 +123,10 @@
     <!-- Email Field -->
     <TextView
         android:id="@+id/email"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:drawablePadding="12dp"
-        android:fontFamily="@font/poppins_medium"
         android:padding="12dp"
         android:text="user123@gmail.com"
         android:textColor="#7C7C7C"
@@ -144,7 +137,7 @@
     <!-- Separator below Email -->
     <View
         android:id="@+id/emailSeparator"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginHorizontal="32dp"
         android:background="#7C7C7C"
@@ -155,12 +148,11 @@
     <!-- Password Label -->
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:drawablePadding="10dp"
-        android:fontFamily="@font/poppins_medium"
         android:textSize="15sp"
         android:text="Password"
         app:drawableStartCompat="@drawable/ic_lock_24"
@@ -187,7 +179,6 @@
             android:background="@null"
             android:drawablePadding="12dp"
             android:enabled="false"
-            android:fontFamily="@font/poppins_medium"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:inputType="textPassword"
@@ -200,7 +191,7 @@
     <!-- Separator below Password -->
     <View
         android:id="@+id/passwordSeparator"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginHorizontal="32dp"
         android:background="#7C7C7C"

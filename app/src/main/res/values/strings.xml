@@ -1,12 +1,15 @@
 <resources>
-    <string name="app_name">Everguard</string>
+
+    <!-- Base application theme. -->
     <string name="everguard">Everguard</string>
-    <string name="everguard_logo">Everguard logo</string>
-    <string name="welcome">Welcome!</string>
-    <string name="tagline">Their safety starts here, let\'s take the first step.</string>
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+
+    <!-- Registration -->
+    <string name="everguard_logo">Everguard logo</string>
+    <string name="welcome">Welcome!</string>
+    <string name="tagline">Their safety starts here, let\'s take the first step.</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="terms_and_conditions"><![CDATA[I agree to the Terms & Conditions.]]></string>
     <string name="get_started">Get Started</string>

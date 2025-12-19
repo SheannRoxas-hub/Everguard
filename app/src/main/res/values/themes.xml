@@ -8,6 +8,8 @@
 
         <!-- Assign the Input Style -->
         <item name="textInputStyle">@style/Widget.Everguard.TextInputLayout</item>
+        <item name="editTextStyle">@style/Widget.Everguard.TextInputEditText</item>
+
 
         <!-- Assign Primary Colors -->
         <item name="colorPrimary">@color/everguard_blue_dark</item>

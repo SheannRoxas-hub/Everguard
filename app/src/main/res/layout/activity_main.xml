@@ -48,9 +48,10 @@
         <TextView
             style="@style/TextAppearance.Everguard.Title"
             android:layout_width="wrap_content"
-            android:layout_height="72dp"
+            android:layout_height="wrap_content"
             android:text="@string/welcome"
-            android:textSize="45sp" />
+            android:textSize="45sp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -73,7 +74,9 @@
                 android:hint="@string/username"
                 android:inputType="text"
                 android:padding="9dp"
-                android:textSize="17sp"/>
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -90,7 +93,9 @@
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:padding="9dp"
-                android:textSize="17sp"/>
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -108,7 +113,9 @@
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 android:padding="9dp"
-                android:textSize="17sp"/>
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -126,13 +133,14 @@
                 android:hint="@string/confirm_password"
                 android:inputType="textPassword"
                 android:padding="9dp"
-                android:textSize="17sp"/>
+                android:textSize="17sp"
+                tools:ignore="TextContrastCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
             android:id="@+id/terms_and_conditions_checkbox"
-            android:layout_width="330dp"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:gravity="start|center_vertical"
             android:text="@string/terms_and_conditions"
@@ -142,7 +150,7 @@
 
         <Button
             android:id="@+id/registration_btn"
-            android:layout_width="330dp"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:padding="10dp"
