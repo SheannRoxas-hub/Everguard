@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Branding Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="everguard_blue">#016296</color>
+    <color name="everguard_blue_dark">#014d86</color>
+    <color name="everguard_cyan">#03bcd6</color>
+    <color name="everguard_cyan_dark">#01a0c4</color>
+    <color name="light_gray">#757575</color>
 </resources>
+
+
+
+
+

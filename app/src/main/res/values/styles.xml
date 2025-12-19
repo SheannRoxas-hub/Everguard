@@ -4,4 +4,16 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="TextAppearance.Everguard.Title" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="fontFamily">@font/poppins_bold</item>
+        <item name="android:textColor">@color/everguard_blue_dark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Everguard.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
