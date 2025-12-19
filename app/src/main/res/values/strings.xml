@@ -23,6 +23,6 @@
     <string name="sample_password">userpass123</string>
     <string name="sample_pfp">Profile Picture</string>
     <string name="profile">Profile</string>
-
+    <string name="hello_user">Hello, %1$s!</string>
 
 </resources>

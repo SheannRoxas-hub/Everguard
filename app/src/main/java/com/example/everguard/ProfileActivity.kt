@@ -36,7 +36,7 @@ class ProfileActivity : AppCompatActivity() {
 
         //value set from the value extracted
         val usernameTextView = binding.helloUser
-        usernameTextView.text = "Hello, $username!"
+        usernameTextView.text= getString(R.string.hello_user, username)
 
         val emailTextView = binding.email
         emailTextView.text = email

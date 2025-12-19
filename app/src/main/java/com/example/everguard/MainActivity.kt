@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             password != confirmPassword -> {
-                binding.confirmPasswordLayout.error = "Passwords do not match"
+                showError(binding.confirmPasswordLayout, "Passwords do not match")
                 binding.confirmPasswordInput.requestFocus()
             }
 
