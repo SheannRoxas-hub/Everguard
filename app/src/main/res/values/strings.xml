@@ -25,4 +25,11 @@
     <string name="profile">Profile</string>
     <string name="hello_user">Hello, %1$s!</string>
 
+    <!-- Login -->
+    <string name="welcome_login">Welcome Back!</string>
+    <string name="tagline_login">Let\'s continue caring for what matters most.</string>
+    <string name="sign_in_button">Sign-in</string>
+    <string name="register_option">Don\'t have an account?</string>
+    <string name="remember_me"><![CDATA[Remember me]]></string>
+    <string name="forgot_passwd">Forgot password?</string>
 </resources>
