@@ -47,7 +47,7 @@ class ProfileActivity : AppCompatActivity() {
         //adds the back function to registration
         val backArrow = binding.backArrow
         backArrow.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, RegisterActivity::class.java)
 
             val options = android.app.ActivityOptions.makeCustomAnimation(
                 this,
