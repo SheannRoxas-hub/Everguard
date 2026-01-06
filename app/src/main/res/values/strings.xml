@@ -32,4 +32,10 @@
     <string name="register_option">Don\'t have an account?</string>
     <string name="remember_me"><![CDATA[Remember me]]></string>
     <string name="forgot_passwd">Forgot password?</string>
+
+    <!-- Forgot Password -->
+    <string name="forgot_pwd_title">Forgot Password</string>
+    <string name="tagline_forgot_pwd">Enter your email to reset your password.</string>
+    <string name="back_button">Back</string>
+    <string name="submit_button">Submit</string>
 </resources>
