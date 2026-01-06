@@ -20,43 +20,27 @@
             android:layout_height="100dp"
             android:layout_gravity="start"
             android:importantForAccessibility="no"
-            android:src="@drawable/reg_designtop" />
+            android:src="@drawable/design_top" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:contentDescription="@string/everguard_logo"
-                android:src="@drawable/blue_logo" />
-
-            <TextView
-                style="@style/TextAppearance.Everguard.Title.Blue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="@string/everguard"
-                android:textSize="25sp" />
-        </LinearLayout>
-
+        <ImageView
+            android:layout_width="267dp"
+            android:layout_height="178dp"
+            android:layout_gravity="center_horizontal"
+            android:importantForAccessibility="no"
+            android:src="@drawable/login_design" />
 
         <TextView
             style="@style/TextAppearance.Everguard.Title.Blue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/welcome"
-            android:textSize="45sp"
+            android:text="@string/welcome_login"
+            android:textSize="40sp"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tagline"
+            android:text="@string/tagline_login"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -73,25 +57,6 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/username"
                 android:inputType="text"
-                android:padding="9dp"
-                android:textSize="17sp"
-                tools:ignore="TextContrastCheck" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/email_layout"
-            android:layout_width="330dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            app:errorIconDrawable="@null">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/email"
-                android:inputType="textEmailAddress"
                 android:padding="9dp"
                 android:textSize="17sp"
                 tools:ignore="TextContrastCheck" />
@@ -118,35 +83,40 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/confirm_password_layout"
-            android:layout_width="330dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            app:endIconMode="password_toggle"
-            app:errorIconDrawable="@null">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/confirm_password_input"
-                android:layout_width="match_parent"
+        <RelativeLayout
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            >
+
+            <CheckBox
+                android:id="@+id/terms_checkbox"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/confirm_password"
-                android:inputType="textPassword"
-                android:padding="9dp"
-                android:textSize="17sp"
-                tools:ignore="TextContrastCheck" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/forgot_password_btn"
+                android:text="@string/remember_me"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/forgot_password_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:paddingTop="13dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/forgot_passwd"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-        <CheckBox
-            android:id="@+id/terms_checkbox"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:gravity="start|center_vertical"
-            android:text="@string/terms_and_conditions"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+        </RelativeLayout>
+
 
         <Button
             android:id="@+id/registration_btn"
@@ -154,7 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:padding="10dp"
-            android:text="@string/get_started"
+            android:text="@string/sign_in_button"
             android:textColor="@color/white"
             android:textSize="17sp" />
 
@@ -162,7 +132,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="@string/Login_option"
+            android:text="@string/register_option"
             android:textColor="@color/light_gray"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -175,6 +145,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/reg_designbottom" />
+        android:src="@drawable/design_bottom" />
 
 </RelativeLayout>
