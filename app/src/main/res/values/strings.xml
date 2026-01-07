@@ -33,9 +33,16 @@
     <string name="remember_me"><![CDATA[Remember me]]></string>
     <string name="forgot_passwd">Forgot password?</string>
 
-    <!-- Forgot Password -->
+    <!-- Forgot Password & Register Authentication-->
     <string name="forgot_pwd_title">Forgot Password</string>
+    <string name="reg_auth_title">Verify your account!</string>
     <string name="tagline_forgot_pwd">Enter your email to reset your password.</string>
+    <string name="tagline_reg_auth">A verification link has been sent to your email.</string>
+    <string name="tagline_resend">No verification email? Resend email.</string>
     <string name="back_button">Back</string>
     <string name="submit_button">Submit</string>
+    <string name="proceed_button">Proceed</string>
+    <string name="resend_button">Resend</string>
+
+
 </resources>
