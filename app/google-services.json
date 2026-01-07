@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "282778798522",
+    "project_id": "everguard-2ea86",
+    "storage_bucket": "everguard-2ea86.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282778798522:android:7901ee61d3bbe76a6eb583",
+        "android_client_info": {
+          "package_name": "com.example.everguard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "282778798522-cbai9ptdpl3a407dtngnvidob926vsgm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw3dlFGhVS0sIq-pAyUQsgksjIIhZ2cHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "282778798522-cbai9ptdpl3a407dtngnvidob926vsgm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,11 +11,15 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputLayout
 import androidx.core.widget.doOnTextChanged
 import com.example.everguard.databinding.ActivityRegisterBinding
-import kotlin.jvm.java
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
+    private lateinit var auth: FirebaseAuth
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +36,7 @@ class RegisterActivity : AppCompatActivity() {
             v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
+        auth = Firebase.auth
 
         setupListeners()
     }
@@ -74,6 +79,7 @@ class RegisterActivity : AppCompatActivity() {
         val email = binding.emailInput.text.toString().trim()
         val password = binding.passwordInput.text.toString()
         val confirmPassword = binding.confirmPasswordInput.text.toString()
+        val passwordRegex = Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$")
 
         when {
             username.isEmpty() -> {
@@ -101,6 +107,11 @@ class RegisterActivity : AppCompatActivity() {
                 binding.passwordInput.requestFocus()
             }
 
+            !password.matches(passwordRegex)-> {
+                showError(binding.passwordLayout, "Password must have atleast one uppercase, lowercase, digit, special character")
+                binding.passwordInput.requestFocus()
+            }
+
             confirmPassword.isEmpty() -> {
                 showError(binding.confirmPasswordLayout, "Please confirm your password")
                 binding.confirmPasswordInput.requestFocus()
@@ -120,22 +131,28 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             else -> {
-                onRegistrationSuccess(username)
+                binding.registrationBtn.isEnabled = false // Prevent double clicks
 
-                val toProfile = Intent(this, ProfileActivity::class.java)
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            val user = auth.currentUser
 
-                toProfile.putExtra("username", username)
-                toProfile.putExtra("email", email)
-                toProfile.putExtra("password", password)
+                            // 1. Send the email
+                            user?.sendEmailVerification()?.addOnCompleteListener { verifyTask ->
+                                if (verifyTask.isSuccessful) {
+                                    // 2. Redirect to the "Waiting" screen
+                                    val intent = Intent(this, RegAuthActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                            }
+                        } else {
+                            binding.registrationBtn.isEnabled = true
+                            Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
 
-                val options = android.app.ActivityOptions.makeCustomAnimation(
-                    this,
-                    android.R.anim.fade_in,
-                    android.R.anim.fade_out
-                )
-
-                startActivity(toProfile, options.toBundle())
-                finish()
             }
         }
     }
@@ -146,15 +163,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun showError (layout: TextInputLayout, message: String) {
-        layout.error = message
         layout.isErrorEnabled = true
-    }
-
-    private fun onRegistrationSuccess(username: String) {
-        Toast.makeText(
-            this,
-            "Welcome, $username!",
-            Toast.LENGTH_LONG
-        ).show()
+        layout.error = message
     }
 }
