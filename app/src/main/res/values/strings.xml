@@ -69,7 +69,7 @@
     <!-- Emergency Contacts -->
     <string name="emergency_contacts_title">Emergency Contacts</string>
     <string name="emergency_contacts_subtitle">This helps us quickly notify the right people when it matters most.</string>
-    <string name="relationship">Relationship</string>
+    <string name="relationship_hint">Relationship</string>
 
     <!-- Device Pairing -->
     <string name="device_pair_title">Device Pair</string>
