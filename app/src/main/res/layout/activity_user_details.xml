@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Top Right Design -->
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="110dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:importantForAccessibility="no"
+            android:src="@drawable/top_right_border"
+            android:scaleType="fitXY"
+            android:translationX="20dp"
+            android:translationY="-10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="30dp"
+            android:paddingTop="30dp"
+            android:paddingBottom="100dp">
+
+            <!-- Logo Section -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:contentDescription="@string/everguard_logo"
+                    android:src="@drawable/blue_logo" />
+
+                <TextView
+                    style="@style/TextAppearance.Everguard.Title.Blue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/everguard"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <!-- Title and Subtitle -->
+            <TextView
+                style="@style/TextAppearance.Everguard.Title.Blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="@string/setup_title"
+                android:textSize="36sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/setup_subtitle"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins_medium" />
+
+            <!-- Form Fields -->
+            <EditText
+                android:id="@+id/first_name_input"
+                style="@style/InputField"
+                android:layout_marginTop="30dp"
+                android:hint="@string/first_name"
+                android:inputType="textPersonName"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/last_name_input"
+                style="@style/InputField"
+                android:layout_marginTop="12dp"
+                android:hint="@string/last_name"
+                android:inputType="textPersonName"
+                android:importantForAutofill="no" />
+
+            <Spinner
+                android:id="@+id/dob_spinner"
+                style="@style/InputSpinner"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/spinner_bg" />
+
+            <Spinner
+                android:id="@+id/gender_spinner"
+                style="@style/InputSpinner"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/spinner_bg" />
+
+            <EditText
+                android:id="@+id/mobile_number_input"
+                style="@style/InputField"
+                android:layout_marginTop="12dp"
+                android:hint="@string/mobile_number"
+                android:inputType="phone"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/address_input"
+                style="@style/InputField"
+                android:layout_marginTop="12dp"
+                android:hint="@string/house_address"
+                android:inputType="textPostalAddress"
+                android:importantForAutofill="no" />
+
+            <Spinner
+                android:id="@+id/city_spinner"
+                style="@style/InputSpinner"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/spinner_bg" />
+
+            <Spinner
+                android:id="@+id/province_spinner"
+                style="@style/InputSpinner"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/spinner_bg" />
+
+            <!-- Next Button -->
+            <Button
+                android:id="@+id/next_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:backgroundTint="@color/everguard_blue_dark"
+                android:paddingHorizontal="35dp"
+                android:text="@string/next"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:cornerRadius="10dp" />
+
+        </LinearLayout>
+
+        <!-- Bottom Right Design -->
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="120dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:importantForAccessibility="no"
+            android:src="@drawable/design_bottom"
+            android:scaleType="fitXY" />
+
+    </RelativeLayout>
+</ScrollView>

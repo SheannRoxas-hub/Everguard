@@ -17,17 +17,29 @@
     </style>
 
     <style name="Widget.Everguard.TextInputEditText" parent="@style/Widget.Design.TextInputEditText">
-        <!-- 1. Text color (fixes accessibility/contrast) -->
-        <item name="android:textColor">#000000</item>
-
-        <!-- 2. Font (assuming Poppins is in your res/font folder) -->
+        <item name="android:textColor">@color/black</item>
         <item name="android:fontFamily">@font/poppins_medium</item>
-
-        <!-- 3. Size and Padding -->
         <item name="android:textSize">17sp</item>
         <item name="android:padding">11dp</item>
-
-        <!-- 4. Important: Remove default background to avoid line clashes -->
         <item name="android:background">@null</item>
+    </style>
+
+    <style name="InputField">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">55dp</item>
+        <item name="android:background">@drawable/rounded_input_bg</item>
+        <item name="android:paddingHorizontal">15dp</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">#828282</item>
+    </style>
+
+    <style name="InputSpinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">55dp</item>
+        <item name="android:paddingHorizontal">12dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/rounded_input_bg</item>
     </style>
 </resources>
