@@ -11,6 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Everguard">
         <activity
+            android:name=".DevicePairingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EmergencyContactsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MedicalInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity

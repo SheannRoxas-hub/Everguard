@@ -45,4 +45,36 @@
     <string name="resend_button">Resend</string>
 
 
+    <!-- User Details -->
+    <string name="setup_title">Let’s Get You Setup!</string>
+    <string name="setup_subtitle">Please enter the details of the person you’re caring for</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="house_address">House No. &amp; Street</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="gender">Gender</string>
+    <string name="city">City</string>
+    <string name="province">Province</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+
+    <!-- Medical Information -->
+    <string name="medical_info_title">Medical Information</string>
+    <string name="medical_info_subtitle">A few medical details help us keep you safe and well-supported.</string>
+    <string name="medical_conditions">Medical Conditions</string>
+    <string name="blood_type">Blood Type</string>
+    <string name="mobility_status">Mobility Status</string>
+
+    <!-- Emergency Contacts -->
+    <string name="emergency_contacts_title">Emergency Contacts</string>
+    <string name="emergency_contacts_subtitle">This helps us quickly notify the right people when it matters most.</string>
+    <string name="relationship">Relationship</string>
+
+    <!-- Device Pairing -->
+    <string name="device_pair_title">Device Pair</string>
+    <string name="device_pair_subtitle">Pair your Everguard device for secure, reliable monitoring</string>
+    <string name="device_id_hint">Device Identification Number</string>
+    <string name="verify">Verify</string>
+
 </resources>
