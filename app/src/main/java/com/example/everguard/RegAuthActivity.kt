@@ -46,7 +46,7 @@ class RegAuthActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     if (user.isEmailVerified) {
                         Toast.makeText(this, "Email Verified!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, ProfileActivity::class.java))
+                        startActivity(Intent(this, UserDetailsActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this, "Please click the link in your email first.", Toast.LENGTH_LONG).show()

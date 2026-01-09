@@ -11,6 +11,12 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Everguard">
         <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegAuthActivity"
+            android:exported="false" />
+        <activity
             android:name=".DevicePairingActivity"
             android:exported="false" />
         <activity
