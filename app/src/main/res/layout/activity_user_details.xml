@@ -73,75 +73,170 @@
                 android:fontFamily="@font/poppins_medium" />
 
             <!-- Form Fields -->
-            <EditText
-                android:id="@+id/first_name_input"
-                style="@style/InputField"
-                android:layout_marginTop="30dp"
-                android:hint="@string/first_name"
-                android:inputType="textPersonName"
-                android:importantForAutofill="no" />
 
-            <EditText
-                android:id="@+id/last_name_input"
-                style="@style/InputField"
-                android:layout_marginTop="12dp"
-                android:hint="@string/last_name"
-                android:inputType="textPersonName"
-                android:importantForAutofill="no" />
 
-            <Spinner
-                android:id="@+id/dob_spinner"
-                style="@style/InputSpinner"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/spinner_bg" />
 
-            <Spinner
-                android:id="@+id/gender_spinner"
-                style="@style/InputSpinner"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/spinner_bg" />
 
-            <EditText
-                android:id="@+id/mobile_number_input"
-                style="@style/InputField"
-                android:layout_marginTop="12dp"
-                android:hint="@string/mobile_number"
-                android:inputType="phone"
-                android:importantForAutofill="no" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/first_name_layout"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                app:errorIconDrawable="@null">
 
-            <EditText
-                android:id="@+id/address_input"
-                style="@style/InputField"
-                android:layout_marginTop="12dp"
-                android:hint="@string/house_address"
-                android:inputType="textPostalAddress"
-                android:importantForAutofill="no" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/first_name_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/first_name"
+                    android:inputType="text"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="TextContrastCheck" />
 
-            <Spinner
-                android:id="@+id/city_spinner"
-                style="@style/InputSpinner"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/spinner_bg" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <Spinner
-                android:id="@+id/province_spinner"
-                style="@style/InputSpinner"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/last_name_layout"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:errorIconDrawable="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/last_name_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/last_name"
+                    android:inputType="text"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/birthday_layout"
+                style="@style/Widget.Everguard.TextInputLayout"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:errorIconDrawable="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/birthday_input"
+                    style="@style/Widget.Everguard.TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="@string/date_of_birth"
+                    android:inputType="none"
+                    android:padding="9dp"
+                    android:textColor="#000000"
+                    android:textColorHint="#000000"
+                    android:textSize="17sp"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/gender_layout"
+                style="@style/Widget.Everguard.Dropdown"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/spinner_bg" />
+                app:errorIconDrawable="@null"
+                android:importantForAccessibility="no">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/gender_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/gender"
+                    android:inputType="none"
+                    android:minHeight="48dp"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mobile_number_layout"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:errorIconDrawable="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/mobile_number_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/mobile_number"
+                    android:inputType="text"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/address_layout"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:errorIconDrawable="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/address_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/house_address"
+                    android:inputType="text"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/city_layout"
+                style="@style/Widget.Everguard.Dropdown"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:errorIconDrawable="@null"
+                android:importantForAccessibility="no">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/city_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/city"
+                    android:inputType="none"
+                    android:minHeight="48dp"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
 
             <!-- Next Button -->
             <Button
                 android:id="@+id/next_btn"
-                android:layout_width="wrap_content"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
-                android:backgroundTint="@color/everguard_blue_dark"
-                android:paddingHorizontal="35dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="0dp"
                 android:text="@string/next"
-                android:textAllCaps="false"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="@color/everguard_blue_dark" />
 
         </LinearLayout>
 

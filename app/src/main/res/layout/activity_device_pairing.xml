@@ -23,6 +23,7 @@
             android:translationX="20dp"
             android:translationY="-10dp" />
 
+        <!-- Bottom Right Design -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,66 +68,67 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins_medium"
                 android:text="@string/device_pair_subtitle"
                 android:textColor="@color/black"
-                android:textSize="15sp"
-                android:fontFamily="@font/poppins_medium" />
+                android:textSize="15sp" />
 
             <!-- Form Fields -->
-            <EditText
-                android:id="@+id/device_id_input"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/device_id_layout"
                 android:layout_width="330dp"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Everguard.TextInputLayout"
-                android:layout_marginTop="30dp"
-                android:hint="@string/device_id_hint"
-                android:inputType="text"
-                android:importantForAutofill="no"
-                app:strokeColor = "@color/black"
-                app:strokeWidth = "1dp"/>
+                android:layout_marginTop="25dp"
+                app:errorIconDrawable="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/device_id_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/device_id_hint"
+                    android:inputType="text"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Buttons -->
             <LinearLayout
                 style="?android:attr/buttonBarStyle"
-                android:layout_width="match_parent"
+                android:layout_width="275dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="15dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/back_btn"
+                    android:id="@+id/resend_btn"
                     style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white"
-                    android:paddingHorizontal="30dp"
-                    android:text="@string/back"
-                    android:textAllCaps="false"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="0dp"
+                    android:text="@string/back_button"
                     android:textColor="@color/everguard_blue_dark"
-                    android:textSize="18sp"
-                    android:strokeWidth="1"
-                    android:strokeColor="@color/everguard_blue_dark"
-                    app:cornerRadius="10dp" />
+                    app:backgroundTint="@color/white"
+                    app:strokeColor="@color/everguard_blue_dark"
+                    app:strokeWidth="2dp" />
 
                 <Button
-                    android:id="@+id/verify_btn"
+                    android:id="@+id/proceed_btn"
                     style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:backgroundTint="@color/everguard_blue_dark"
-                    android:paddingHorizontal="35dp"
-                    android:text="@string/verify"
-                    android:textAllCaps="false"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/proceed_button"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
-                    app:cornerRadius="10dp" />
-
+                    app:backgroundTint="@color/everguard_blue_dark" />
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Bottom Right Design -->
         <ImageView
             android:layout_width="180dp"
             android:layout_height="120dp"
