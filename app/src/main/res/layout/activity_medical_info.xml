@@ -73,67 +73,104 @@
                 android:fontFamily="@font/poppins_medium" />
 
             <!-- Form Fields (Spinners) -->
-            <Spinner
-                android:id="@+id/medical_conditions_spinner"
-                style="@style/InputSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/spinner_bg"
-                android:prompt="@string/medical_conditions" />
-
-            <Spinner
-                android:id="@+id/blood_type_spinner"
-                style="@style/InputSpinner"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/condition_layout"
+                style="@style/Widget.Everguard.Dropdown"
+                android:layout_width="330dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/spinner_bg"
-                android:prompt="@string/blood_type" />
+                app:errorIconDrawable="@null"
+                android:importantForAccessibility="no">
 
-            <Spinner
-                android:id="@+id/mobility_status_spinner"
-                style="@style/InputSpinner"
-                android:layout_width="match_parent"
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/coondition_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/medical_conditions"
+                    android:inputType="none"
+                    android:minHeight="48dp"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/blood_type_layout"
+                style="@style/Widget.Everguard.Dropdown"
+                android:layout_width="330dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/spinner_bg"
-                android:prompt="@string/mobility_status" />
+                app:errorIconDrawable="@null"
+                android:importantForAccessibility="no">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/blood_type_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/blood_type"
+                    android:inputType="none"
+                    android:minHeight="48dp"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mobility_layout"
+                style="@style/Widget.Everguard.Dropdown"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:errorIconDrawable="@null"
+                android:importantForAccessibility="no">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/mobility_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/mobility_status"
+                    android:inputType="none"
+                    android:minHeight="48dp"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Buttons -->
             <LinearLayout
-                android:layout_width="match_parent"
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="275dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="150dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="15dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/back_btn"
-                    android:layout_width="wrap_content"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white"
-                    android:paddingHorizontal="30dp"
-                    android:text="@string/back"
-                    android:textAllCaps="false"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="0dp"
+                    android:text="@string/back_button"
                     android:textColor="@color/everguard_blue_dark"
-                    android:textSize="18sp"
-                    app:strokeWidth="1dp"
+                    app:backgroundTint="@color/white"
                     app:strokeColor="@color/everguard_blue_dark"
-                    app:cornerRadius="10dp" />
+                    app:strokeWidth="2dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/next_btn"
-                    android:layout_width="wrap_content"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:backgroundTint="@color/everguard_blue_dark"
-                    android:paddingHorizontal="35dp"
+                    android:layout_marginStart="8dp"
                     android:text="@string/next"
-                    android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
-                    app:cornerRadius="10dp" />
-
+                    app:backgroundTint="@color/everguard_blue_dark" />
             </LinearLayout>
 
         </LinearLayout>

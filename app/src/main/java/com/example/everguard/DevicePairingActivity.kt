@@ -1,6 +1,8 @@
 package com.example.everguard
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -27,8 +29,21 @@ class DevicePairingActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        binding.verifyBtn.setOnClickListener {
-            // Handle verification action
+        binding.proceedBtn.setOnClickListener {
+            val deviceId = binding.deviceIdInput.text.toString()
+
+            // 1. Basic Validation
+            if (deviceId.isEmpty()) {
+                Toast.makeText(
+                    this,
+                    "Please fill in all required fields",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
         }
     }
 }

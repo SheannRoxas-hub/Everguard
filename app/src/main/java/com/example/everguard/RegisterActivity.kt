@@ -39,6 +39,11 @@ class RegisterActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         setupListeners()
+
+        binding.loginBtn.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
     }
 
     private fun setupListeners() {
@@ -144,7 +149,6 @@ class RegisterActivity : AppCompatActivity() {
                                     // 2. Redirect to the "Waiting" screen
                                     val intent = Intent(this, RegAuthActivity::class.java)
                                     startActivity(intent)
-                                    finish()
                                 }
                             }
                         } else {

@@ -3,6 +3,8 @@ package com.example.everguard
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -25,41 +27,47 @@ class EmergencyContactsActivity : AppCompatActivity() {
             insets
         }
 
-        setupSpinners()
+        setupDropdowns()
 
         binding.backBtn.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
         binding.nextBtn.setOnClickListener {
-            val intent = Intent(this, DevicePairingActivity::class.java)
-            startActivity(intent)
+            handleValidationAndNext()
         }
     }
 
-    private fun setupSpinners() {
-        val relationships = arrayOf("Relationship", "Parent", "Sibling", "Spouse", "Child", "Friend", "Other")
-        setupSpinner(binding.relationshipSpinner, relationships)
+    private fun handleValidationAndNext() {
+        val name = binding.firstNameInput.text.toString().trim()
+        val phone = binding.mobileNumberInput.text.toString().trim()
+        val relationship = binding.relationshipInput.text.toString()
+
+        // BASIC VALIDATION
+        if (name.isEmpty() || phone.isEmpty() || relationship.isEmpty()) {
+            Toast.makeText(this, "Please fill in all contact details", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Navigate to next screen (No putExtra as requested)
+        val intent = Intent(this, DevicePairingActivity::class.java)
+        startActivity(intent)
     }
 
-    private fun setupSpinner(spinner: android.widget.Spinner, options: Array<String>) {
-        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, options) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
+    private fun setupDropdowns() {
+        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Other")
 
-            override fun getDropDownView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup): android.view.View {
-                val view = super.getDropDownView(position, convertView, parent)
-                val tv = view as android.widget.TextView
-                if (position == 0) {
-                    tv.setTextColor(android.graphics.Color.GRAY)
-                } else {
-                    tv.setTextColor(android.graphics.Color.BLACK)
-                }
-                return view
-            }
-        }
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
+        // Use the helper to set up the AutoCompleteTextView
+        setupAdapter(binding.relationshipInput, relationships)
+    }
+
+    private fun setupAdapter(view: AutoCompleteTextView, options: Array<String>) {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, options)
+        view.setAdapter(adapter)
+
+        // Ensures the dropdown opens immediately when the user taps the field
+        view.setOnClickListener { view.showDropDown() }
     }
 }
+
+
