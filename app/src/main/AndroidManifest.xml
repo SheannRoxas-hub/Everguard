@@ -26,9 +26,6 @@
             android:name=".EmergencyContactsActivity"
             android:exported="false" />
         <activity
-            android:name=".MedicalInfoActivity"
-            android:exported="false" />
-        <activity
             android:name=".UserDetailsActivity"
             android:exported="false" />
         <activity
