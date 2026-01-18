@@ -183,49 +183,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/address_layout"
-                android:layout_width="330dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                app:errorIconDrawable="@null">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/address_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/house_address"
-                    android:inputType="text"
-                    android:padding="9dp"
-                    android:textSize="17sp"
-                    tools:ignore="TextContrastCheck" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/city_layout"
-                style="@style/Widget.Everguard.Dropdown"
-                android:layout_width="330dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:errorIconDrawable="@null"
-                android:importantForAccessibility="no">
-
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/city_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/city"
-                    android:inputType="none"
-                    android:minHeight="48dp"
-                    android:padding="9dp"
-                    android:textSize="17sp"
-                    tools:ignore="SpeakableTextPresentCheck" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-
             <!-- Next Button -->
             <Button
                 android:id="@+id/next_btn"

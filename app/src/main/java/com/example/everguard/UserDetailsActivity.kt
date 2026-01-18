@@ -39,10 +39,9 @@ class UserDetailsActivity : AppCompatActivity() {
             val lastName = binding.lastNameInput.text.toString().trim()
             val gender = binding.genderInput.text.toString()
             val birthday = binding.birthdayInput.text.toString()
-            val city = binding.cityInput.text.toString()
 
             // 1. Basic Validation
-            if (firstName.isEmpty() || lastName.isEmpty() || birthday.isEmpty() || gender.isEmpty() || city.isEmpty()) {
+            if (firstName.isEmpty() || lastName.isEmpty() || birthday.isEmpty() || gender.isEmpty()) {
                 Toast.makeText(
                     this,
                     "Please fill in all required fields",
@@ -52,12 +51,11 @@ class UserDetailsActivity : AppCompatActivity() {
             }
 
             //2. Logic to move to the next screen
-            val intent = Intent(this, MedicalInfoActivity::class.java).apply {
+            val intent = Intent(this, EmergencyContactsActivity::class.java).apply {
                 putExtra("FIRST_NAME", firstName)
                 putExtra("LAST_NAME", lastName)
                 putExtra("GENDER", gender)
                 putExtra("BIRTHDAY", birthday)
-                putExtra("CITY", city)
             }
             startActivity(intent)
         }
@@ -66,10 +64,8 @@ class UserDetailsActivity : AppCompatActivity() {
         // 1. Setup Dropdowns (Exposed Dropdown Menus)
         // Ensure your XML uses AutoCompleteTextView inside a TextInputLayout
         val genderOptions = arrayOf("Male", "Female", "Other")
-        val cityOptions = arrayOf("Manila", "Quezon City", "Caloocan City", "Cebu City", "Davao City")
 
         setupDropdown(binding.genderInput, genderOptions)
-        setupDropdown(binding.cityInput, cityOptions)
 
         // 2. Setup Date Picker
         setupDatePicker()
