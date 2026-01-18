@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Everguard">
         <activity
+            android:name=".HomeNotificationsContactsActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity

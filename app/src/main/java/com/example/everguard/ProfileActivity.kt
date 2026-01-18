@@ -62,7 +62,7 @@ class ProfileActivity : AppCompatActivity() {
         //adds the back function to registration
         val backArrow = binding.backArrow
         backArrow.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
+            val intent = Intent(this, HomeNotificationsContactsActivity::class.java)
 
             val options = android.app.ActivityOptions.makeCustomAnimation(
                 this,
@@ -119,7 +119,6 @@ class ProfileActivity : AppCompatActivity() {
 
             if (binding.editProfileCardView.visibility == View.GONE) {
                 binding.editProfileCardView.visibility = View.VISIBLE
-                // Pre-fill the input with current data
                 binding.editUsernameInput.setText(binding.helloUser.text.toString().replace("Hello, ", ""))
                 binding.editEmailInput.setText(binding.email.text)
                 binding.editPasswordInput.setText(binding.password.text)
@@ -130,10 +129,9 @@ class ProfileActivity : AppCompatActivity() {
 
         // Back profile button click
         binding.backEditProfileBtn.setOnClickListener {
-            // Add smooth animation
+
             android.transition.TransitionManager.beginDelayedTransition(binding.root)
 
-            // Hide the edit card
             binding.editProfileCardView.visibility = View.GONE
         }
 
@@ -143,15 +141,14 @@ class ProfileActivity : AppCompatActivity() {
             val newEmail = binding.editEmailInput.text.toString().trim()
             val newPassword = binding.editPasswordInput.text.toString().trim()
 
-            // Validation: Check if any fields are empty
             if (newUsername.isNotEmpty() && newEmail.isNotEmpty() && newPassword.isNotEmpty()) {
 
-                // Update the UI text immediately
+                // Update Text
                 binding.helloUser.text = getString(R.string.hello_user, newUsername)
                 binding.email.text = newEmail
                 binding.password.setText(newPassword)
 
-                // Hide the edit card smoothly
+                // Hide the edit card
                 android.transition.TransitionManager.beginDelayedTransition(binding.root)
                 binding.editProfileCardView.visibility = View.GONE
 

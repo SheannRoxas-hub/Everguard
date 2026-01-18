@@ -81,4 +81,63 @@
     <string name="device_id_hint">Device Identification Number</string>
     <string name="verify">Verify</string>
 
+    <!-- Home Notifications Contacts -->
+    <string name="home">Home</string>
+    <string name="notifications">Notifications</string>
+    <string name="contacts">Contacts</string>
+    <string name="menu">Menu</string>
+    <string name="logout">Logout</string>
+    <string name="user_profile">User Profile</string>
+    <string name="device_status">Device Status:</string>
+    <string name="status">Connected</string>
+    <string name="battery">100%</string>
+    <string name="recent_alert">Recent Alert</string>
+    <string name="alert_description">A fall has been detected!</string>
+    <string name="alert_time_30m">30 mins ago</string>
+    <string name="accident_alert">Accident Alert</string>
+    <string name="recipient">Recipient</string>
+    <string name="recipient_name">Juan Dela Cruz</string>
+    <string name="age">Age:</string>
+    <string name="recipient_age">67</string>
+    <string name="device_settings">DEVICE SETTINGS</string>
+    <string name="sensitivity_label">Detection Sensitivity</string>
+    <string name="test_alert">Test Alert</string>
+    <string name="device_alert">Device Alert</string>
+    <string name="low">Low</string>
+    <string name="medium">Medium</string>
+    <string name="high">High</string>
+    <string name="call">Call</string>
+    <string name="send_sms">Send SMS</string>
+    <string name="or">or</string>
+    <string name="sample_message">A fall has been detected by the device. An alert is sent to notify emergency contacts. Please check on the user and provide assistance if needed.</string>
+    <string name="sample_location">google.maps.com/latx.laty</string>
+    <string name="sensitivity_description">Detection sensitivity level</string>
+
+
+
+
+
+
+    <string name="add_contact">Add Contact</string>
+    <string name="update_contact">Update Contact</string>
+    <string name="sample_contact1_name">Sheann Roxas</string>
+    <string name="sample_contact2_name">Kenneth Bulos</string>
+    <string name="relationship_guardian">Guardian</string>
+    <string name="relationship_caretaker">Caretaker</string>
+    <string name="sample_contact1_number">09606 814 352</string>
+    <string name="sample_contact2_number">0967 676 767</string>
+    <string name="sample_counter">2/3</string>
+
+
+    <string name="SOS_alert">SOS Alert</string>
+    <string name="low_battery">Low Battery Alert</string>
+    <string name="SOS_message">Juan Dela Cruz needs immediate help!</string>
+    <string name="low_battery_message">The device only has 20% charge left!</string>
+    <string name="alert_time_1d">1 day ago</string>
+    <string name="alert_time_5d">5 days ago</string>
+    <string name="alert_time_1h">1 hour ago</string>
+    <string name="alert_time_3h">3 hours ago</string>
+    <string name="add">Add</string>
+
+
 </resources>

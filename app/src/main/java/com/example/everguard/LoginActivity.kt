@@ -25,7 +25,7 @@ class LoginActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val refreshedUser = auth.currentUser
                 if (refreshedUser?.isEmailVerified == true) {
-                    startActivity(Intent(this, ProfileActivity::class.java))
+                    startActivity(Intent(this, HomeNotificationsContactsActivity::class.java))
                 } else {
                     startActivity(Intent(this, RegAuthActivity::class.java))
                 }
@@ -62,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
                     val user = auth.currentUser
 
                     if (user?.isEmailVerified == true) {
-                        startActivity(Intent(this, ProfileActivity::class.java))
+                        startActivity(Intent(this, HomeNotificationsContactsActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this, "Please verify your email first.", Toast.LENGTH_LONG).show()
