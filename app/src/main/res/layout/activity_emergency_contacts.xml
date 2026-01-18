@@ -112,25 +112,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/mobile_number_layout"
-                android:layout_width="330dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                app:errorIconDrawable="@null">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/mobile_number_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/mobile_number"
-                    android:inputType="text"
-                    android:padding="9dp"
-                    android:textSize="17sp"
-                    tools:ignore="TextContrastCheck" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/relationship_layout"
                 style="@style/Widget.Everguard.Dropdown"
                 android:layout_width="330dp"
@@ -150,6 +131,25 @@
                     android:textSize="17sp"
                     tools:ignore="SpeakableTextPresentCheck" />
 
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mobile_number_layout"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:errorIconDrawable="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/mobile_number_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/mobile_number"
+                    android:inputType="text"
+                    android:padding="9dp"
+                    android:textSize="17sp"
+                    tools:ignore="TextContrastCheck" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

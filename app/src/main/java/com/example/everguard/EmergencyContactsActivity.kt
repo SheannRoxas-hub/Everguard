@@ -49,9 +49,16 @@ class EmergencyContactsActivity : AppCompatActivity() {
             return
         }
 
-        // Navigate to next screen (No putExtra as requested)
+        // Navigate to next screen
         val intent = Intent(this, DevicePairingActivity::class.java)
         startActivity(intent)
+
+        // Extract values from the TextInputEditTexts
+        intent.putExtra("CONTACT_FIRST_NAME", binding.firstNameInput.text.toString())
+        intent.putExtra("CONTACT_LAST_NAME", binding.lastNameInput.text.toString())
+        intent.putExtra("CONTACT_RELATIONSHIP", binding.relationshipInput.text.toString())
+        intent.putExtra("CONTACT_MOBILE", binding.mobileNumberInput.text.toString())
+
     }
 
     private fun setupDropdowns() {
