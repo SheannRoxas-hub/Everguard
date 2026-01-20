@@ -40,7 +40,6 @@ class UserDetailsActivity : AppCompatActivity() {
             val gender = binding.genderInput.text.toString()
             val birthday = binding.birthdayInput.text.toString()
 
-            // 1. Basic Validation
             if (firstName.isEmpty() || lastName.isEmpty() || birthday.isEmpty() || gender.isEmpty()) {
                 Toast.makeText(
                     this,
@@ -50,7 +49,7 @@ class UserDetailsActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            //2. Logic to move to the next screen
+            // Move to the next screen
             val intent = Intent(this, EmergencyContactsActivity::class.java).apply {
                 putExtra("FIRST_NAME", firstName)
                 putExtra("LAST_NAME", lastName)

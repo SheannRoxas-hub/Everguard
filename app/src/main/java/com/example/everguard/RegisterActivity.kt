@@ -14,7 +14,7 @@ import com.example.everguard.databinding.ActivityRegisterBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-
+import com.google.firebase.database.FirebaseDatabase
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -143,13 +143,32 @@ class RegisterActivity : AppCompatActivity() {
                         if (task.isSuccessful) {
                             val user = auth.currentUser
 
-                            // 1. Send the email
-                            user?.sendEmailVerification()?.addOnCompleteListener { verifyTask ->
-                                if (verifyTask.isSuccessful) {
-                                    // 2. Redirect to the "Waiting" screen
-                                    val intent = Intent(this, RegAuthActivity::class.java)
-                                    startActivity(intent)
-                                }
+                            user?.let {
+                                // Create user object (DO NOT store password in database!)
+                                val userProfile = User(
+                                    username = username,
+                                    email = email,
+                                    userId = it.uid
+                                )
+
+                                // Save to Realtime Database
+                                val database = FirebaseDatabase.getInstance("https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("users")
+                                database.child(it.uid).setValue(userProfile)
+                                    .addOnSuccessListener { _ ->  // Changed 'it' to '_'
+                                        // Send verification email after successful database save
+                                        user.sendEmailVerification()?.addOnCompleteListener { verifyTask ->
+                                            if (verifyTask.isSuccessful) {
+                                                Toast.makeText(this, "Registration successful! Please verify your email.", Toast.LENGTH_SHORT).show()
+                                                val intent = Intent(this, RegAuthActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                        }
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        binding.registrationBtn.isEnabled = true
+                                        Toast.makeText(this, "Database Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                    }
                             }
                         } else {
                             binding.registrationBtn.isEnabled = true

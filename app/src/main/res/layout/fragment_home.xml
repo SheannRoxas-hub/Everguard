@@ -249,7 +249,7 @@
 
                     <!-- Name -->
                     <TextView
-                        android:id="@+id/RecipientName"
+                        android:id="@+id/recipientName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/recipient_name"
@@ -268,11 +268,11 @@
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/RecipientName"/>
+                        app:layout_constraintTop_toBottomOf="@id/recipientName"/>
 
                     <!-- Age Value -->
                     <TextView
-                        android:id="@+id/AgeValue"
+                        android:id="@+id/recipientAge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/recipient_age"
