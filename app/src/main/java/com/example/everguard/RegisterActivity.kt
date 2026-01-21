@@ -15,11 +15,12 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
-
+    private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,8 +113,8 @@ class RegisterActivity : AppCompatActivity() {
                 binding.passwordInput.requestFocus()
             }
 
-            !password.matches(passwordRegex)-> {
-                showError(binding.passwordLayout, "Password must have atleast one uppercase, lowercase, digit, special character")
+            !password.matches(passwordRegex) -> {
+                showError(binding.passwordLayout, "Password must have at least one uppercase, lowercase, digit, special character")
                 binding.passwordInput.requestFocus()
             }
 
@@ -144,17 +145,23 @@ class RegisterActivity : AppCompatActivity() {
                             val user = auth.currentUser
 
                             user?.let {
-                                // Create user object (DO NOT store password in database!)
+                                // Get current date
+                                val currentDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                                    .format(java.util.Date())
+
+                                // Create user object with basic info only
                                 val userProfile = User(
                                     username = username,
                                     email = email,
-                                    userId = it.uid
+                                    createdAt = currentDate,
+                                    deviceId = "", // Will be set during device pairing
+                                    carePerson = CarePerson() // Empty for now, will be filled in UserDetailsActivity
                                 )
 
                                 // Save to Realtime Database
-                                val database = FirebaseDatabase.getInstance("https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("users")
-                                database.child(it.uid).setValue(userProfile)
-                                    .addOnSuccessListener { _ ->  // Changed 'it' to '_'
+                                val database = Firebase.database(databaseUrl).getReference("users").child(it.uid)
+                                database.setValue(userProfile)
+                                    .addOnSuccessListener { _ ->
                                         // Send verification email after successful database save
                                         user.sendEmailVerification()?.addOnCompleteListener { verifyTask ->
                                             if (verifyTask.isSuccessful) {
@@ -175,7 +182,6 @@ class RegisterActivity : AppCompatActivity() {
                             Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
-
             }
         }
     }
@@ -185,7 +191,7 @@ class RegisterActivity : AppCompatActivity() {
         layout.isErrorEnabled = false
     }
 
-    private fun showError (layout: TextInputLayout, message: String) {
+    private fun showError(layout: TextInputLayout, message: String) {
         layout.isErrorEnabled = true
         layout.error = message
     }

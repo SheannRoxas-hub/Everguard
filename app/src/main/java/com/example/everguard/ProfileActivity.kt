@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import com.example.everguard.databinding.ActivityProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -124,7 +125,7 @@ class ProfileActivity : AppCompatActivity() {
             if (newUsername.isNotEmpty() && newEmail.isNotEmpty()) {
                 updateUserProfile(newUsername, newEmail)
             } else {
-                android.widget.Toast.makeText(this, "All fields are required", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -162,7 +163,7 @@ class ProfileActivity : AppCompatActivity() {
                 newRelationship.isNotEmpty() && newMobile.isNotEmpty()) {
                 updateRecipientProfile(newRecipientFname, newRecipientLname, newRelationship, newMobile)
             } else {
-                android.widget.Toast.makeText(this, "All fields are required", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -175,16 +176,22 @@ class ProfileActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val user = snapshot.getValue(User::class.java)
                 user?.let {
-                    binding.helloUser.text = getString(R.string.hello_user, it.username)
+                    binding.helloUser.text = "Hello, ${it.username}!"
                     binding.email.text = it.email
+
+                    // Load care person details
+                    it.carePerson.let { carePerson ->
+                        binding.recipientFname.text = carePerson.fname
+                        binding.recipientLname.text = carePerson.lname
+                    }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                android.widget.Toast.makeText(
+                Toast.makeText(
                     this@ProfileActivity,
                     "Failed to load profile: ${error.message}",
-                    android.widget.Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         })
@@ -192,34 +199,40 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun loadRecipientProfile() {
         val userId = auth.currentUser?.uid ?: return
-        val database = FirebaseDatabase.getInstance(databaseUrl)
-            .getReference("users").child(userId).child("seniorDetails")
 
-        database.addValueEventListener(object : ValueEventListener {
+        // First get the user's deviceId
+        val userRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("users").child(userId)
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val senior = snapshot.getValue(SeniorDetails::class.java)
-                senior?.let {
-                    // Display senior's name in the Recipient section
-                    binding.recipientFname.text = it.firstName
-                    binding.recipientLname.text = it.lastName
+                val user = snapshot.getValue(User::class.java)
+                val deviceId = user?.deviceId
+
+                if (!deviceId.isNullOrEmpty() && deviceId != "") {
+                    // Load emergency contacts from device
+                    loadEmergencyContacts(deviceId)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle error silently
+                // Handle error
             }
         })
+    }
 
-        // Also load emergency contact details
-        val contactDatabase = FirebaseDatabase.getInstance(databaseUrl)
-            .getReference("users").child(userId).child("emergencyContact")
+    private fun loadEmergencyContacts(deviceId: String) {
+        val deviceRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("devices").child(deviceId).child("emergencyContacts")
 
-        contactDatabase.addValueEventListener(object : ValueEventListener {
+        deviceRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val contact = snapshot.getValue(EmergencyContact::class.java)
-                contact?.let {
+                // Get the first emergency contact to display
+                val firstContact = snapshot.children.firstOrNull()?.getValue(EmergencyContact::class.java)
+
+                firstContact?.let {
                     binding.recipientRelationship.text = it.relationship
-                    binding.recipientMobile.text = it.mobile
+                    binding.recipientMobile.text = it.contact
                 }
             }
 
@@ -240,67 +253,97 @@ class ProfileActivity : AppCompatActivity() {
 
         database.updateChildren(updates)
             .addOnSuccessListener {
-                binding.helloUser.text = getString(R.string.hello_user, username)
+                binding.helloUser.text = "Hello, $username!"
                 binding.email.text = email
 
                 android.transition.TransitionManager.beginDelayedTransition(binding.root)
                 binding.editProfileCardView.visibility = View.GONE
 
-                android.widget.Toast.makeText(this, "Profile updated successfully!", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { exception ->
-                android.widget.Toast.makeText(this, "Update failed: ${exception.message}", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Update failed: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
     private fun updateRecipientProfile(firstName: String, lastName: String, relationship: String, mobile: String) {
         val userId = auth.currentUser?.uid ?: return
 
-        // Update senior details
-        val seniorDatabase = FirebaseDatabase.getInstance(databaseUrl)
-            .getReference("users").child(userId).child("seniorDetails")
+        // Update care person details (first and last name)
+        val carePersonRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("users").child(userId).child("carePerson")
 
-        val seniorUpdates = hashMapOf<String, Any>(
-            "firstName" to firstName,
-            "lastName" to lastName
+        val carePersonUpdates = hashMapOf<String, Any>(
+            "fname" to firstName,
+            "lname" to lastName
         )
 
-        // Update emergency contact
-        val contactDatabase = FirebaseDatabase.getInstance(databaseUrl)
-            .getReference("users").child(userId).child("emergencyContact")
-
-        val contactUpdates = hashMapOf<String, Any>(
-            "relationship" to relationship,
-            "mobile" to mobile
-        )
-
-        // Update both in parallel
-        seniorDatabase.updateChildren(seniorUpdates)
+        carePersonRef.updateChildren(carePersonUpdates)
             .addOnSuccessListener {
-                contactDatabase.updateChildren(contactUpdates)
-                    .addOnSuccessListener {
-                        // Update UI
-                        binding.recipientFname.text = firstName
-                        binding.recipientLname.text = lastName
-                        binding.recipientRelationship.text = relationship
-                        binding.recipientMobile.text = mobile
+                // Now update emergency contact (relationship and mobile)
+                // First, get the deviceId
+                val userRef = FirebaseDatabase.getInstance(databaseUrl)
+                    .getReference("users").child(userId)
 
-                        android.transition.TransitionManager.beginDelayedTransition(binding.root)
-                        binding.editRecipientCardView.visibility = View.GONE
+                userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val user = snapshot.getValue(User::class.java)
+                        val deviceId = user?.deviceId
 
-                        android.widget.Toast.makeText(this, "Recipient Profile updated successfully!", android.widget.Toast.LENGTH_SHORT).show()
+                        if (!deviceId.isNullOrEmpty() && deviceId != "") {
+                            // Update the first emergency contact
+                            val contactRef = FirebaseDatabase.getInstance(databaseUrl)
+                                .getReference("devices").child(deviceId).child("emergencyContacts")
+
+                            contactRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(contactSnapshot: DataSnapshot) {
+                                    // Get the key of the first contact
+                                    val firstContactKey = contactSnapshot.children.firstOrNull()?.key
+
+                                    if (firstContactKey != null) {
+                                        val contactUpdates = hashMapOf<String, Any>(
+                                            "relationship" to relationship,
+                                            "contact" to mobile
+                                        )
+
+                                        contactRef.child(firstContactKey).updateChildren(contactUpdates)
+                                            .addOnSuccessListener {
+                                                // Update UI
+                                                binding.recipientFname.text = firstName
+                                                binding.recipientLname.text = lastName
+                                                binding.recipientRelationship.text = relationship
+                                                binding.recipientMobile.text = mobile
+
+                                                android.transition.TransitionManager.beginDelayedTransition(binding.root)
+                                                binding.editRecipientCardView.visibility = View.GONE
+
+                                                Toast.makeText(this@ProfileActivity, "Recipient Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Toast.makeText(this@ProfileActivity, "Failed to update contact: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(this@ProfileActivity, "Failed to load contacts: ${error.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
                     }
-                    .addOnFailureListener { exception ->
-                        android.widget.Toast.makeText(this, "Failed to update contact: ${exception.message}", android.widget.Toast.LENGTH_SHORT).show()
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@ProfileActivity, "Failed to load user: ${error.message}", Toast.LENGTH_SHORT).show()
                     }
+                })
             }
             .addOnFailureListener { exception ->
-                android.widget.Toast.makeText(this, "Failed to update senior details: ${exception.message}", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to update care person: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
     private fun setupDropdowns() {
-        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Other")
+        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Doctor", "Guardian", "Other")
         setupAdapter(binding.editRelationshipInput, relationships)
     }
 

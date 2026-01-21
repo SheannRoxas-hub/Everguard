@@ -46,13 +46,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/NotificationTitle"/>
 
-    <!-- Contacts Counter -->
+    <!-- Contacts Counter - CHANGED ID -->
     <TextView
-        android:id="@+id/ContactsCounter"
+        android:id="@+id/contactCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="@string/sample_counter"
+        android:text="0/3"
         android:textColor="#282828"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -68,12 +68,13 @@
         android:layout_marginTop="10dp"
         android:paddingHorizontal="20dp">
 
-        <!-- Card 1: Sheann Roxas -->
+        <!-- Card 1: Contact 1 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:id="@+id/Contact1"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
+            android:visibility="gone"
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
@@ -85,8 +86,9 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp">
 
+                <!-- CHANGED ID -->
                 <TextView
-                    android:id="@+id/ContactName1"
+                    android:id="@+id/contact1Name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sample_contact1_name"
@@ -96,18 +98,20 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <!-- CHANGED ID -->
                 <TextView
-                    android:id="@+id/ContactRole1"
+                    android:id="@+id/contact1Relationship"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/relationship_guardian"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactName1" />
+                    app:layout_constraintTop_toBottomOf="@id/contact1Name" />
 
+                <!-- CHANGED ID -->
                 <TextView
-                    android:id="@+id/ContactPhone1"
+                    android:id="@+id/contact1Phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sample_contact1_number"
@@ -121,12 +125,13 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Card 2: Kenneth Bulos -->
+        <!-- Card 2: Contact 2 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:id="@+id/Contact2"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
+            android:visibility="gone"
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
@@ -138,8 +143,9 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp">
 
+                <!-- CHANGED ID -->
                 <TextView
-                    android:id="@+id/ContactName2"
+                    android:id="@+id/contact2Name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sample_contact2_name"
@@ -149,18 +155,20 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <!-- CHANGED ID -->
                 <TextView
-                    android:id="@+id/ContactRole2"
+                    android:id="@+id/contact2Relationship"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/relationship_caretaker"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactName2" />
+                    app:layout_constraintTop_toBottomOf="@id/contact2Name" />
 
+                <!-- CHANGED ID -->
                 <TextView
-                    android:id="@+id/ContactPhone2"
+                    android:id="@+id/contact2Phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sample_contact2_number"
@@ -197,16 +205,16 @@
 
     <!-- Dim Background Overlay -->
     <View
-    android:id="@+id/dimOverlay"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#80000000"
-    android:visibility="gone"
-    android:elevation="7dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/dimOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:elevation="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Add Contact CardView -->
     <androidx.cardview.widget.CardView
@@ -245,8 +253,9 @@
                 android:layout_marginBottom="12dp"
                 android:hint="@string/recipient_fname">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/add_recipient_fname_input"
+                    android:id="@+id/addRecipientFnameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -259,8 +268,9 @@
                 android:layout_marginBottom="12dp"
                 android:hint="@string/recipient_lname">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/add_recipient_lname_input"
+                    android:id="@+id/addRecipientLnameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -273,8 +283,9 @@
                 android:layout_marginBottom="12dp"
                 android:hint="@string/relationship_hint">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/add_relationship_input"
+                    android:id="@+id/addRelationshipInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none" />
@@ -288,8 +299,9 @@
                 android:layout_marginBottom="20dp"
                 android:hint="@string/mobile_number">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/add_mobile_input"
+                    android:id="@+id/addMobileInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone" />
@@ -310,9 +322,9 @@
                     android:layout_marginEnd="8dp"
                     android:text="@string/back" />
 
-                <!-- Add Button -->
+                <!-- Add Button - CHANGED ID -->
                 <Button
-                    android:id="@+id/add_recipient_btn"
+                    android:id="@+id/addRecipientBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/add"
@@ -358,8 +370,9 @@
                 android:layout_marginBottom="12dp"
                 android:hint="@string/recipient_fname">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/update_recipient_fname_input"
+                    android:id="@+id/updateRecipientFnameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -372,8 +385,9 @@
                 android:layout_marginBottom="12dp"
                 android:hint="@string/recipient_lname">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/update_recipient_lname_input"
+                    android:id="@+id/updateRecipientLnameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -386,8 +400,9 @@
                 android:layout_marginBottom="12dp"
                 android:hint="@string/relationship_hint">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/update_relationship_input"
+                    android:id="@+id/updateRelationshipInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none" />
@@ -401,8 +416,9 @@
                 android:layout_marginBottom="20dp"
                 android:hint="@string/mobile_number">
 
+                <!-- CHANGED ID -->
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/update_mobile_input"
+                    android:id="@+id/updateMobileInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone" />
@@ -423,11 +439,23 @@
                     android:layout_marginEnd="8dp"
                     android:text="@string/back" />
 
-                <!-- Update Button -->
+                <!-- Delete Button - NEW -->
                 <Button
-                    android:id="@+id/update_recipient_changes_btn"
+                    android:id="@+id/btnDeleteContact"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Delete"
+                    android:textColor="@android:color/holo_red_dark"
+                    app:strokeColor="@android:color/holo_red_dark" />
+
+                <!-- Update Button - CHANGED ID -->
+                <Button
+                    android:id="@+id/updateRecipientChangesBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/update"
                     app:cornerRadius="8dp" />
             </LinearLayout>

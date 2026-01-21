@@ -18,6 +18,10 @@ class EmergencyContactsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
+    // Store contacts temporarily
+    private val emergencyContacts = mutableMapOf<String, EmergencyContact>()
+    private var currentContactNumber = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,73 +53,86 @@ class EmergencyContactsActivity : AppCompatActivity() {
         val relationship = binding.relationshipInput.text.toString()
         val mobile = binding.mobileNumberInput.text.toString().trim()
 
-        // BASIC VALIDATION
+        // Validation
         if (contactFirstName.isEmpty() || contactLastName.isEmpty() ||
             relationship.isEmpty() || mobile.isEmpty()) {
             Toast.makeText(this, "Please fill in all contact details", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Get senior details from previous activity
-        val seniorFirstName = intent.getStringExtra("FIRST_NAME") ?: ""
-        val seniorLastName = intent.getStringExtra("LAST_NAME") ?: ""
-        val gender = intent.getStringExtra("GENDER") ?: ""
-        val birthday = intent.getStringExtra("BIRTHDAY") ?: ""
-
-        // Save to Firebase
-        saveToFirebase(
-            seniorFirstName, seniorLastName, gender, birthday,
-            contactFirstName, contactLastName, relationship, mobile
+        // Add current contact to the map
+        val contact = EmergencyContact(
+            fname = contactFirstName,
+            lname = contactLastName,
+            relationship = relationship,
+            contact = mobile
         )
+
+        emergencyContacts["emgperson$currentContactNumber"] = contact
+
+        // Ask if they want to add more contacts (max 3)
+        if (currentContactNumber < 3) {
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Add Another Contact?")
+                .setMessage("You can add up to ${3 - currentContactNumber} more emergency contact(s).")
+                .setPositiveButton("Add Another") { _, _ ->
+                    currentContactNumber++
+                    clearInputs()
+                }
+                .setNegativeButton("Continue") { _, _ ->
+                    saveAllContactsAndProceed()
+                }
+                .show()
+        } else {
+            saveAllContactsAndProceed()
+        }
     }
 
-    private fun saveToFirebase(
-        seniorFirstName: String,
-        seniorLastName: String,
-        gender: String,
-        birthday: String,
-        contactFirstName: String,
-        contactLastName: String,
-        relationship: String,
-        mobile: String
-    ) {
+    private fun clearInputs() {
+        binding.firstNameInput.text?.clear()
+        binding.lastNameInput.text?.clear()
+        binding.relationshipInput.text?.clear()
+        binding.mobileNumberInput.text?.clear()
+        Toast.makeText(this, "Enter contact ${currentContactNumber} details", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveAllContactsAndProceed() {
         val userId = auth.currentUser?.uid
         if (userId == null) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val database = FirebaseDatabase.getInstance(databaseUrl).getReference("users").child(userId)
+        // For now, we'll use a temporary device ID
+        // This will be replaced when you implement device pairing
+        val deviceId = "TEMP_${userId.take(8)}"
 
-        // Create senior details object
-        val seniorDetails = SeniorDetails(
-            firstName = seniorFirstName,
-            lastName = seniorLastName,
-            gender = gender,
-            birthday = birthday
+        val deviceRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("devices").child(deviceId)
+
+        // Create device with emergency contacts
+        val device = Device(
+            deviceId = deviceId,
+            batteryStatus = "100%",
+            sensitivity = 3,
+            isSos = false,
+            emergencyContacts = emergencyContacts
         )
 
-        // Create emergency contact object
-        val emergencyContact = EmergencyContact(
-            firstName = contactFirstName,
-            lastName = contactLastName,
-            relationship = relationship,
-            mobile = mobile
-        )
-
-        // Save both to Firebase
-        val updates = hashMapOf<String, Any>(
-            "seniorDetails" to seniorDetails,
-            "emergencyContact" to emergencyContact
-        )
-
-        database.updateChildren(updates)
+        deviceRef.setValue(device)
             .addOnSuccessListener {
-                Toast.makeText(this, "Details saved successfully!", Toast.LENGTH_SHORT).show()
+                // Also update user's deviceId
+                val userRef = FirebaseDatabase.getInstance(databaseUrl)
+                    .getReference("users").child(userId)
 
-                // Navigate to next screen
-                val intent = Intent(this, DevicePairingActivity::class.java)
-                startActivity(intent)
+                userRef.child("deviceId").setValue(deviceId)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Emergency contacts saved!", Toast.LENGTH_SHORT).show()
+
+                        // Navigate to Device Pairing
+                        val intent = Intent(this, DevicePairingActivity::class.java)
+                        startActivity(intent)
+                    }
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Failed to save: ${exception.message}", Toast.LENGTH_SHORT).show()
@@ -123,7 +140,7 @@ class EmergencyContactsActivity : AppCompatActivity() {
     }
 
     private fun setupDropdowns() {
-        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Other")
+        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Doctor", "Guardian", "Other")
         setupAdapter(binding.relationshipInput, relationships)
     }
 

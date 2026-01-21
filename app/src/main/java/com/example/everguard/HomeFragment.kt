@@ -14,6 +14,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import android.widget.Toast
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -91,18 +94,18 @@ class HomeFragment : Fragment() {
 
     private fun loadSeniorDetails() {
         val userId = auth.currentUser?.uid ?: return
-        val database = FirebaseDatabase.getInstance(databaseUrl)
-            .getReference("users").child(userId).child("seniorDetails")
+        val userRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("users").child(userId)
 
-        database.addValueEventListener(object : ValueEventListener {
+        userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val senior = snapshot.getValue(SeniorDetails::class.java)
-                senior?.let {
+                val user = snapshot.getValue(User::class.java)
+                user?.carePerson?.let { carePerson ->
                     // Update the recipient name
-                    binding.recipientName.text = "${it.firstName} ${it.lastName}"
+                    binding.recipientName.text = "${carePerson.fname} ${carePerson.lname}"
 
-                    // Calculate and display age (optional)
-                    val age = calculateAge(it.birthday)
+                    // Calculate and display age
+                    val age = calculateAge(carePerson.bdate)
                     binding.recipientAge.text = "Age: $age"
                 }
             }
@@ -118,20 +121,20 @@ class HomeFragment : Fragment() {
     }
 
     private fun calculateAge(birthday: String): Int {
-        // Parse birthday string (format: "MMMM dd, yyyy" e.g., "January 1, 1958")
         try {
-            val dateFormat = java.text.SimpleDateFormat("MMMM dd, yyyy", java.util.Locale.getDefault())
-            val birthDate = dateFormat.parse(birthday)
+            // Parse birthday string (format: "yyyy-MM-dd")
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val birthDate = dateFormat.parse(birthday) ?: return 0
 
-            val birthCalendar = java.util.Calendar.getInstance()
+            val birthCalendar = Calendar.getInstance()
             birthCalendar.time = birthDate
 
-            val today = java.util.Calendar.getInstance()
+            val today = Calendar.getInstance()
 
-            var age = today.get(java.util.Calendar.YEAR) - birthCalendar.get(java.util.Calendar.YEAR)
+            var age = today.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)
 
             // Check if birthday hasn't occurred yet this year
-            if (today.get(java.util.Calendar.DAY_OF_YEAR) < birthCalendar.get(java.util.Calendar.DAY_OF_YEAR)) {
+            if (today.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
                 age--
             }
 
