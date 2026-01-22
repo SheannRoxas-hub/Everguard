@@ -35,12 +35,13 @@ data class EmergencyContact(
     val contact: String = ""
 )
 
-// Notification/Alert
+// Notification
 data class Notification(
     val type: String = "",
     val title: String = "",
     val description: String = "",
     val location: String = "",
     val date: String = "",
+    val deviceId: String = "",
     val readBy: List<String> = listOf()
 )

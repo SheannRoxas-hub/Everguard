@@ -10,8 +10,6 @@
     tools:ignore="VisualLintBounds"
     android:layout_margin="20dp">
 
-
-
     <!-- Top Blue Header -->
     <ImageView
         android:id="@+id/header"
@@ -464,13 +462,13 @@
 
                 <!-- First Name Field -->
                 <TextView
-                    android:id="@+id/recipient_fname"
+                    android:id="@+id/recipientFname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="32dp"
                     android:drawablePadding="12dp"
                     android:padding="12dp"
-                    android:text="@string/recipient_fname"
+                    android:text="Stephen"
                     android:textColor="@color/light_gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -483,7 +481,7 @@
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="32dp"
                     android:background="#7C7C7C"
-                    app:layout_constraintTop_toBottomOf="@id/recipient_fname"
+                    app:layout_constraintTop_toBottomOf="@id/recipientFname"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -502,13 +500,13 @@
 
                 <!-- Last Name Field -->
                 <TextView
-                    android:id="@+id/recipient_lname"
+                    android:id="@+id/recipientLname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="32dp"
                     android:drawablePadding="12dp"
                     android:padding="12dp"
-                    android:text="@string/recipient_lname"
+                    android:text="Curry"
                     android:textColor="@color/light_gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -521,51 +519,89 @@
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="32dp"
                     android:background="#7C7C7C"
-                    app:layout_constraintTop_toBottomOf="@id/recipient_lname"
+                    app:layout_constraintTop_toBottomOf="@id/recipientLname"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-                <!-- Relationship label -->
+                <!-- Birthday label -->
                 <TextView
-                    android:id="@+id/label_relationship"
+                    android:id="@+id/label_bdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"
                     android:drawablePadding="10dp"
                     android:textSize="15sp"
-                    android:text="@string/relationship_hint"
+                    android:text="Birthday"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lnameSeparator"/>
 
-                <!-- Relationship Field -->
+                <!-- Birthday Field -->
                 <TextView
-                    android:id="@+id/recipient_relationship"
+                    android:id="@+id/recipientBdate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="32dp"
                     android:drawablePadding="12dp"
                     android:padding="12dp"
-                    android:text="@string/relationship_hint"
+                    android:text="1987-01-14"
                     android:textColor="@color/light_gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/label_relationship" />
+                    app:layout_constraintTop_toBottomOf="@id/label_bdate" />
 
-                <!-- Separator below Relationship -->
+                <!-- Separator below Birthday -->
                 <View
-                    android:id="@+id/relationshipSeparator"
+                    android:id="@+id/bdateSeparator"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="32dp"
                     android:background="#7C7C7C"
-                    app:layout_constraintTop_toBottomOf="@id/recipient_relationship"
+                    app:layout_constraintTop_toBottomOf="@id/recipientBdate"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Gender label -->
+                <TextView
+                    android:id="@+id/label_gender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:drawablePadding="10dp"
+                    android:textSize="15sp"
+                    android:text="Gender"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/bdateSeparator"/>
+
+                <!-- Gender Field -->
+                <TextView
+                    android:id="@+id/recipientGender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="32dp"
+                    android:drawablePadding="12dp"
+                    android:padding="12dp"
+                    android:text="Male"
+                    android:textColor="@color/light_gray"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/label_gender" />
+
+                <!-- Separator below Gender -->
+                <View
+                    android:id="@+id/genderSeparator"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="32dp"
+                    android:background="#7C7C7C"
+                    app:layout_constraintTop_toBottomOf="@id/recipientGender"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
                 <!-- Mobile Number label -->
                 <TextView
-                    android:id="@+id/label_mobile"
+                    android:id="@+id/label_contact"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -574,48 +610,36 @@
                     android:textSize="15sp"
                     android:text="@string/mobile_number"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/relationshipSeparator"/>
+                    app:layout_constraintTop_toBottomOf="@id/genderSeparator"/>
 
                 <!-- Mobile Number Field -->
                 <TextView
-                    android:id="@+id/recipient_mobile"
+                    android:id="@+id/recipientContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="32dp"
                     android:drawablePadding="12dp"
                     android:padding="12dp"
-                    android:text="@string/mobile_number"
+                    android:text="0945892371"
                     android:textColor="@color/light_gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/label_mobile" />
+                    app:layout_constraintTop_toBottomOf="@id/label_contact" />
 
                 <!-- Separator below Mobile Number -->
                 <View
-                    android:id="@+id/mobileNumberSeparator"
+                    android:id="@+id/contactSeparator"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="32dp"
                     android:background="#7C7C7C"
-                    app:layout_constraintTop_toBottomOf="@id/recipient_mobile"
+                    app:layout_constraintTop_toBottomOf="@id/recipientContact"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
                 <!-- Edit Button -->
-                <TextView
-                    android:id="@+id/edit_recipient_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/edit"
-                    android:textColor="@color/everguard_blue"
-                    android:textStyle="bold"
-                    android:padding="8dp"/>
-
-                <!-- Edit Recipient CardView -->
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/edit_recipient_card_view"
+                    android:id="@+id/editRecipientCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -641,63 +665,75 @@
 
                         <!-- Edit Recipient FName Field -->
                         <EditText
-                            android:id="@+id/edit_recipient_fname_input"
+                            android:id="@+id/editRecipientFnameInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/new_recipient_fname"/>
 
-                        <!-- Separator Edit Recipient FName -->
+                        <!-- Separator -->
                         <View
-                            android:id="@+id/editRecipientFnameSeparator"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginHorizontal="12dp"
                             android:background="#7C7C7C"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintTop_toBottomOf="@+id/edit_recipient_fname_input"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            android:layout_marginBottom="5dp"/>
 
                         <!-- Edit Recipient LName Label -->
                         <TextView
-                            android:id="@+id/edit_recipientFLName_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp"
                             android:textSize="15sp"
-                            android:text="@string/recipient_lname"
-                            app:layout_constraintStart_toStartOf="parent"/>
+                            android:text="@string/recipient_lname"/>
 
                         <!-- Edit Recipient LName Field -->
                         <EditText
-                            android:id="@+id/edit_recipient_lname_input"
+                            android:id="@+id/editRecipientLnameInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/new_recipient_lname"/>
 
-                        <!-- Separator Edit Recipient LName -->
+                        <!-- Separator -->
                         <View
-                            android:id="@+id/editRecipientLnameSeparator"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginHorizontal="12dp"
                             android:background="#7C7C7C"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintTop_toBottomOf="@+id/edit_recipient_lname_input"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            android:layout_marginBottom="5dp"/>
 
-                        <!-- Edit Relationship Label -->
+                        <!-- Birthday Label -->
                         <TextView
-                            android:id="@+id/edit_relationship_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp"
                             android:textSize="15sp"
-                            android:text="@string/relationship_hint"
-                            app:layout_constraintStart_toStartOf="parent"/>
+                            android:text="Birthday"/>
 
-                        <!-- Edit Relationship Field -->
+                        <!-- Birthday Field -->
+                        <EditText
+                            android:id="@+id/editRecipientBdateInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="yyyy-MM-dd"
+                            android:inputType="date"/>
+
+                        <!-- Separator -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginHorizontal="12dp"
+                            android:background="#7C7C7C"
+                            android:layout_marginBottom="5dp"/>
+
+                        <!-- Gender Label -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:textSize="15sp"
+                            android:text="Gender"/>
+
+                        <!-- Gender Dropdown -->
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
@@ -707,58 +743,47 @@
                             app:boxStrokeWidth="0dp"
                             app:boxStrokeWidthFocused="0dp">
 
-                            <!-- Input Field -->
                             <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                                android:id="@+id/edit_relationship_input"
+                                android:id="@+id/editRecipientGenderInput"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="none"
                                 android:padding="12dp"
-                                android:text="@string/relationship_hint"
                                 android:textSize="15sp" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Separator Edit Relationship -->
+                        <!-- Separator -->
                         <View
-                            android:id="@+id/editMobileSeparator"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginHorizontal="12dp"
                             android:background="#7C7C7C"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintTop_toBottomOf="@+id/edit_mobile_input_input"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            android:layout_marginBottom="5dp"/>
 
-                        <!-- Edit Mobile Number Label -->
+                        <!-- Mobile Number Label -->
                         <TextView
-                            android:id="@+id/edit_mobile_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp"
                             android:textSize="15sp"
-                            android:text="@string/mobile_number"
-                            app:layout_constraintStart_toStartOf="parent"/>
+                            android:text="@string/mobile_number"/>
 
-                        <!-- Edit Mobile Number Field -->
+                        <!-- Mobile Number Field -->
                         <EditText
-                            android:id="@+id/edit_mobile_input"
+                            android:id="@+id/editRecipientContactInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/new_mobile_number"/>
+                            android:hint="@string/new_mobile_number"
+                            android:inputType="phone"/>
 
-                        <!-- Separator Edit Mobile Number -->
+                        <!-- Separator -->
                         <View
-                            android:id="@+id/editRelationshipSeparator"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginHorizontal="12dp"
                             android:background="#7C7C7C"
-                            android:layout_marginBottom="5dp"
-                            app:layout_constraintTop_toBottomOf="@+id/edit_mobile_input_input"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            android:layout_marginBottom="5dp"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -768,7 +793,7 @@
 
                             <!-- Back Button -->
                             <Button
-                                android:id="@+id/back_edit_recipient_btn"
+                                android:id="@+id/backEditRecipientBtn"
                                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -777,7 +802,7 @@
 
                             <!-- Update Button -->
                             <Button
-                                android:id="@+id/update_recipient_changes_btn"
+                                android:id="@+id/updateRecipientChangesBtn"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/update"

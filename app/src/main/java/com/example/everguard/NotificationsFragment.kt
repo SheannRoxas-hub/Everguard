@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.everguard.databinding.FragmentNotificationsBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -27,7 +26,8 @@ class NotificationsFragment : Fragment() {
     private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     private var notifications = mutableListOf<Notification>()
-    private var selectedNotification: Notification? = null
+    private lateinit var notificationAdapter: NotificationAdapter
+    private var deviceId: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,13 +41,13 @@ class NotificationsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupRecyclerView()
+        getUserDeviceId()
+
+        // Create Test Notifications button
         binding.btnCreateTestData.setOnClickListener {
             createTestNotificationsInFirebase()
-            Toast.makeText(requireContext(), "Test notifications created!", Toast.LENGTH_SHORT).show()
         }
-
-        // Load notifications from Firebase
-        loadNotifications()
 
         // Dim Overlay
         binding.dimOverlay2.setOnClickListener {
@@ -55,17 +55,12 @@ class NotificationsFragment : Fragment() {
             binding.dimOverlay2.visibility = View.GONE
         }
 
-        binding.dimOverlay2.isClickable = true
-        binding.dimOverlay2.isFocusable = true
-
         // Call/SMS logic
         binding.btnCall2.setOnClickListener {
-            // Will implement with emergency contacts
             Toast.makeText(requireContext(), "Calling emergency contact...", Toast.LENGTH_SHORT).show()
         }
 
         binding.btnSms2.setOnClickListener {
-            // Will implement with emergency contacts
             Toast.makeText(requireContext(), "Sending SMS...", Toast.LENGTH_SHORT).show()
         }
 
@@ -75,57 +70,80 @@ class NotificationsFragment : Fragment() {
         }
     }
 
-    private fun loadNotifications() {
+    private fun setupRecyclerView() {
+        notificationAdapter = NotificationAdapter(notifications) { notification ->
+            showNotificationDetails(notification)
+        }
+
+        binding.notificationsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = notificationAdapter
+        }
+    }
+
+    private fun getUserDeviceId() {
         val userId = auth.currentUser?.uid ?: return
 
-        // Get user's device ID first
         val userRef = FirebaseDatabase.getInstance(databaseUrl)
             .getReference("users").child(userId)
 
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-                val deviceId = user?.deviceId
+                deviceId = snapshot.child("deviceId").getValue(String::class.java) ?: ""
 
-                if (!deviceId.isNullOrEmpty() && deviceId != "") {
-                    loadNotificationsForDevice(deviceId)
+                if (deviceId.isNotEmpty()) {
+                    loadNotifications()
                 } else {
-                    // No device paired yet, create dummy notifications for testing
-                    createDummyNotifications()
+                    Toast.makeText(requireContext(), "No device paired", Toast.LENGTH_SHORT).show()
+                    binding.notificationsRecyclerView.visibility = View.GONE
+                    binding.emptyStateText.visibility = View.VISIBLE
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to load user data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to load device info", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun loadNotificationsForDevice(deviceId: String) {
+    private fun loadNotifications() {
+        if (deviceId.isEmpty()) return
+
         val notifsRef = FirebaseDatabase.getInstance(databaseUrl)
             .getReference("notifs")
 
-        // Query notifications (in a real app, you'd filter by deviceId)
         notifsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 notifications.clear()
 
                 for (notifSnapshot in snapshot.children) {
-                    val notification = notifSnapshot.getValue(Notification::class.java)
-                    if (notification != null) {
+                    val type = notifSnapshot.child("type").getValue(String::class.java) ?: ""
+                    val title = notifSnapshot.child("title").getValue(String::class.java) ?: ""
+                    val description = notifSnapshot.child("description").getValue(String::class.java) ?: ""
+                    val location = notifSnapshot.child("location").getValue(String::class.java) ?: ""
+                    val date = notifSnapshot.child("date").getValue(String::class.java) ?: ""
+                    val notifDeviceId = notifSnapshot.child("deviceId").getValue(String::class.java) ?: ""
+
+                    // ONLY show notifications for this user's device
+                    if (notifDeviceId == deviceId) {
+                        val notification = Notification(type, title, description, location, date, deviceId = notifDeviceId, readBy = listOf())
                         notifications.add(notification)
                     }
                 }
 
                 // Sort by date (most recent first)
-                notifications.sortByDescending { it.date }
+                notifications.sortByDescending { parseNotificationDate(it.date) }
 
+                // Show/hide empty state
                 if (notifications.isEmpty()) {
-                    // No notifications yet, show dummy data
-                    createDummyNotifications()
+                    binding.notificationsRecyclerView.visibility = View.GONE
+                    binding.emptyStateText.visibility = View.VISIBLE
                 } else {
-                    displayNotifications()
+                    binding.notificationsRecyclerView.visibility = View.VISIBLE
+                    binding.emptyStateText.visibility = View.GONE
                 }
+
+                notificationAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -134,99 +152,113 @@ class NotificationsFragment : Fragment() {
         })
     }
 
-    private fun createDummyNotifications() {
-        // Create dummy notifications for testing UI
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val now = Calendar.getInstance()
+    private fun showNotificationDetails(notification: Notification) {
+        // Update popup with notification details
+        binding.AlertTitlePop2.text = notification.title
+        binding.AlertTimePop2.text = getTimeAgo(notification.date)
+        binding.AlertDescriptionPop2.text = notification.description
 
-        notifications.clear()
+        // Set color based on type
+        val color = when {
+            notification.type.contains("Fall", ignoreCase = true) ||
+                    notification.type.contains("Accident", ignoreCase = true) -> 0xFFFF914D.toInt()
+            notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt()
+            notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt()
+            else -> 0xFFFF914D.toInt()
+        }
 
-        // Notification 1: 30 mins ago
-        notifications.add(Notification(
-            type = "Fall Alert",
-            title = "Accident Alert",
-            description = "A fall has been detected!",
-            location = "https://maps.google.com",
-            date = dateFormat.format(now.time),
-            readBy = listOf()
-        ))
+        binding.AlertBellPop2.setColorFilter(color)
+        binding.AlertTitlePop2.setTextColor(color)
 
-        // Notification 2: 1 hour ago
-        now.add(Calendar.HOUR, -1)
-        notifications.add(Notification(
-            type = "SOS Alert",
-            title = "SOS Alert",
-            description = "Juan Dela Cruz needs immediate help!",
-            location = "https://maps.google.com",
-            date = dateFormat.format(now.time),
-            readBy = listOf()
-        ))
-
-        // Notification 3: 3 hours ago
-        now.add(Calendar.HOUR, -2)
-        notifications.add(Notification(
-            type = "Battery Alert",
-            title = "Low Battery Alert",
-            description = "The device only has 20% charge left!",
-            location = "",
-            date = dateFormat.format(now.time),
-            readBy = listOf()
-        ))
-
-        // Notification 4: 1 day ago
-        now.add(Calendar.DAY_OF_MONTH, -1)
-        notifications.add(Notification(
-            type = "Fall Alert",
-            title = "Accident Alert",
-            description = "A fall has been detected!",
-            location = "https://maps.google.com",
-            date = dateFormat.format(now.time),
-            readBy = listOf()
-        ))
-
-        // Notification 5: 5 days ago
-        now.add(Calendar.DAY_OF_MONTH, -4)
-        notifications.add(Notification(
-            type = "SOS Alert",
-            title = "SOS Alert",
-            description = "Juan Dela Cruz needs immediate help!",
-            location = "https://maps.google.com",
-            date = dateFormat.format(now.time),
-            readBy = listOf()
-        ))
-
-        // Notification 6: 5 days ago
-        notifications.add(Notification(
-            type = "Battery Alert",
-            title = "Low Battery Alert",
-            description = "The device only has 20% charge left!",
-            location = "",
-            date = dateFormat.format(now.time),
-            readBy = listOf()
-        ))
-
-        displayNotifications()
+        binding.alertDetailsPopup2.visibility = View.VISIBLE
+        binding.dimOverlay2.visibility = View.VISIBLE
     }
 
-    private fun displayNotifications() {
-        // Update UI with notifications
-        if (notifications.isEmpty()) {
-            // Show "No notifications" message
+    private fun createTestNotificationsInFirebase() {
+        if (deviceId.isEmpty()) {
+            Toast.makeText(requireContext(), "No device paired. Cannot create notifications.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // For now, we'll manually set the visible notifications
-        // In a real implementation, you'd use a RecyclerView
+        val notifsRef = FirebaseDatabase.getInstance(databaseUrl).getReference("notifs")
+        val currentTime = Date()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-        // You can display them in your existing card views
-        // This is a simplified version - you should implement a RecyclerView adapter
+        // Create 3 test notifications with CURRENT timestamps
+        val testNotifications = listOf(
+            // Fall Alert - just now
+            mapOf(
+                "type" to "Fall Alert",
+                "title" to "Accident Alert",
+                "description" to "A fall has been detected!",
+                "location" to "https://maps.google.com",
+                "date" to dateFormat.format(currentTime),
+                "deviceId" to deviceId
+            ),
 
-        // Just showing that notifications are loaded
-        Toast.makeText(
-            requireContext(),
-            "Loaded ${notifications.size} notifications",
-            Toast.LENGTH_SHORT
-        ).show()
+            // SOS Alert - just now
+            mapOf(
+                "type" to "SOS Alert",
+                "title" to "SOS Alert",
+                "description" to "Juan Dela Cruz needs immediate help!",
+                "location" to "https://maps.google.com",
+                "date" to dateFormat.format(currentTime),
+                "deviceId" to deviceId
+            ),
+
+            // Low Battery - just now
+            mapOf(
+                "type" to "Battery Alert",
+                "title" to "Low Battery Alert",
+                "description" to "The device only has 20% charge left!",
+                "location" to "https://maps.google.com",
+                "date" to dateFormat.format(currentTime),
+                "deviceId" to deviceId
+            )
+        )
+
+        var successCount = 0
+        testNotifications.forEachIndexed { index, notifData ->
+            val notifId = "TEST_${System.currentTimeMillis()}_$index"
+            notifsRef.child(notifId).setValue(notifData)
+                .addOnSuccessListener {
+                    successCount++
+                    if (successCount == testNotifications.size) {
+                        Toast.makeText(requireContext(), "Created 3 test notifications!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun parseNotificationDate(dateStr: String): Date {
+        return try {
+            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            format.parse(dateStr) ?: Date(0)
+        } catch (e: Exception) {
+            Date(0)
+        }
+    }
+
+    private fun getTimeAgo(dateStr: String): String {
+        val notificationDate = parseNotificationDate(dateStr)
+        val now = Date()
+        val diffInMillis = now.time - notificationDate.time
+
+        val seconds = diffInMillis / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+
+        return when {
+            seconds < 60 -> "Just now"
+            minutes < 60 -> "${minutes}m ago"
+            hours < 24 -> "${hours}h ago"
+            days < 7 -> "${days}d ago"
+            else -> "${days / 7}w ago"
+        }
     }
 
     private fun showPopupMenu(view: View) {
@@ -267,35 +299,6 @@ class NotificationsFragment : Fragment() {
             }
         }
         popup.show()
-    }
-
-    // Add this to NotificationsFragment temporarily for testing
-    private fun createTestNotificationsInFirebase() {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val notifsRef = FirebaseDatabase.getInstance(databaseUrl).getReference("notifs")
-
-        val testNotifications = listOf(
-            Notification(
-                type = "Fall Alert TEST 123",
-                title = "Accident Alert",
-                description = "A fall has been detected! REPEAT REPEAT",
-                location = "https://maps.google.com",
-                date = dateFormat.format(Date()),
-                readBy = listOf()
-            ),
-            Notification(
-                type = "SOS Alert",
-                title = "SOS Alert",
-                description = "STEPHEN CURRY needs immediate help!",
-                location = "https://maps.google.com",
-                date = dateFormat.format(Date()),
-                readBy = listOf()
-            )
-        )
-
-        testNotifications.forEachIndexed { index, notification ->
-            notifsRef.child("N_00${index + 1}").setValue(notification)
-        }
     }
 
     override fun onDestroyView() {

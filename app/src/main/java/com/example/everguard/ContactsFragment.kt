@@ -51,11 +51,17 @@ class ContactsFragment : Fragment() {
 
         // Contact Cards logic
         binding.Contact1.setOnClickListener {
-            openUpdateContact("emgperson1")
+            val contactsList = currentContacts.toList()
+            if (contactsList.isNotEmpty()) {
+                openUpdateContact(contactsList[0].first)
+            }
         }
 
         binding.Contact2.setOnClickListener {
-            openUpdateContact("emgperson2")
+            val contactsList = currentContacts.toList()
+            if (contactsList.size > 1) {
+                openUpdateContact(contactsList[1].first)
+            }
         }
 
         // Add Contact Button logic
@@ -105,11 +111,14 @@ class ContactsFragment : Fragment() {
 
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-                deviceId = user?.deviceId ?: ""
+                deviceId = snapshot.child("deviceId").getValue(String::class.java) ?: ""
 
-                if (deviceId.isNotEmpty()) {
+                if (deviceId.isNotEmpty() && deviceId != "") {
                     loadContactsFromDevice(deviceId)
+                } else {
+                    // No device paired yet
+                    updateUI()
+                    Toast.makeText(requireContext(), "No device paired", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -129,15 +138,23 @@ class ContactsFragment : Fragment() {
 
                 for (contactSnapshot in snapshot.children) {
                     val key = contactSnapshot.key ?: continue
-                    val contact = contactSnapshot.getValue(EmergencyContact::class.java) ?: continue
-                    currentContacts[key] = contact
+
+                    // Parse the contact data
+                    val fname = contactSnapshot.child("fname").getValue(String::class.java) ?: ""
+                    val lname = contactSnapshot.child("lname").getValue(String::class.java) ?: ""
+                    val relationship = contactSnapshot.child("relationship").getValue(String::class.java) ?: ""
+                    val contact = contactSnapshot.child("contact").getValue(String::class.java) ?: ""
+
+                    if (fname.isNotEmpty() || lname.isNotEmpty()) {
+                        currentContacts[key] = EmergencyContact(fname, lname, relationship, contact)
+                    }
                 }
 
                 updateUI()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to load contacts", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to load contacts: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -168,14 +185,6 @@ class ContactsFragment : Fragment() {
             binding.Contact2.visibility = View.VISIBLE
         } else {
             binding.Contact2.visibility = View.GONE
-        }
-
-        // Update Contact 3 (if you have a third card in XML)
-        if (contactsList.size > 2) {
-            val (key3, contact3) = contactsList[2]
-            // Add Contact3 card to your XML if needed
-            // binding.contact3Name.text = "${contact3.fname} ${contact3.lname}"
-            // binding.Contact3.visibility = View.VISIBLE
         }
 
         // Show/hide add button
@@ -220,18 +229,18 @@ class ContactsFragment : Fragment() {
             return
         }
 
-        val updatedContact = EmergencyContact(
-            fname = fname,
-            lname = lname,
-            relationship = relationship,
-            contact = mobile
+        val updatedContact = mapOf(
+            "fname" to fname,
+            "lname" to lname,
+            "relationship" to relationship,
+            "contact" to mobile
         )
 
         val contactRef = FirebaseDatabase.getInstance(databaseUrl)
             .getReference("devices").child(deviceId)
             .child("emergencyContacts").child(selectedContactKey!!)
 
-        contactRef.setValue(updatedContact)
+        contactRef.setValue(updatedContact)  // Changed from updateChildren to setValue
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Contact updated successfully!", Toast.LENGTH_SHORT).show()
                 binding.updateContactCard.visibility = View.GONE
@@ -263,11 +272,11 @@ class ContactsFragment : Fragment() {
             return
         }
 
-        val newContact = EmergencyContact(
-            fname = fname,
-            lname = lname,
-            relationship = relationship,
-            contact = mobile
+        val newContact = mapOf(
+            "fname" to fname,
+            "lname" to lname,
+            "relationship" to relationship,
+            "contact" to mobile
         )
 
         // Determine the next contact key
@@ -323,7 +332,6 @@ class ContactsFragment : Fragment() {
     }
 
     private fun reorganizeContacts() {
-        // After deletion, reorganize contacts to maintain emgperson1, emgperson2, emgperson3 order
         if (deviceId.isEmpty()) return
 
         val contactsRef = FirebaseDatabase.getInstance(databaseUrl)
@@ -331,21 +339,30 @@ class ContactsFragment : Fragment() {
 
         contactsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val contacts = mutableListOf<EmergencyContact>()
+                val contacts = mutableListOf<Map<String, String>>()
 
                 for (contactSnapshot in snapshot.children) {
-                    val contact = contactSnapshot.getValue(EmergencyContact::class.java)
-                    if (contact != null) {
-                        contacts.add(contact)
+                    val fname = contactSnapshot.child("fname").getValue(String::class.java) ?: ""
+                    val lname = contactSnapshot.child("lname").getValue(String::class.java) ?: ""
+                    val relationship = contactSnapshot.child("relationship").getValue(String::class.java) ?: ""
+                    val contact = contactSnapshot.child("contact").getValue(String::class.java) ?: ""
+
+                    if (fname.isNotEmpty() || lname.isNotEmpty()) {
+                        contacts.add(mapOf(
+                            "fname" to fname,
+                            "lname" to lname,
+                            "relationship" to relationship,
+                            "contact" to contact
+                        ))
                     }
                 }
 
                 // Clear all contacts
                 contactsRef.removeValue().addOnSuccessListener {
                     // Re-add contacts with correct keys
-                    contacts.forEachIndexed { index, contact ->
+                    contacts.forEachIndexed { index, contactData ->
                         val newKey = "emgperson${index + 1}"
-                        contactsRef.child(newKey).setValue(contact)
+                        contactsRef.child(newKey).setValue(contactData)
                     }
                 }
             }

@@ -159,6 +159,7 @@
                 android:id="@+id/AccidentAlert"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:cardBackgroundColor="#fafafa"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
@@ -172,7 +173,7 @@
 
                     <!-- Bell Icon -->
                     <ImageView
-                        android:id="@+id/AlertBell"
+                        android:id="@+id/alertIcon"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/notifications_icon"
@@ -180,9 +181,9 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
 
-                    <!-- Accident Alert Title -->
+                    <!-- Alert Title -->
                     <TextView
-                        android:id="@+id/AlertTitle"
+                        android:id="@+id/alertTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -190,13 +191,13 @@
                         android:textColor="#ff914d"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@id/AlertBell"
-                        app:layout_constraintStart_toEndOf="@id/AlertBell"
-                        app:layout_constraintTop_toTopOf="@id/AlertBell"/>
+                        app:layout_constraintBottom_toBottomOf="@id/alertIcon"
+                        app:layout_constraintStart_toEndOf="@id/alertIcon"
+                        app:layout_constraintTop_toTopOf="@id/alertIcon"/>
 
                     <!-- Timestamp -->
                     <TextView
-                        android:id="@+id/AlertTime"
+                        android:id="@+id/alertTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/alert_time_30m"
@@ -207,7 +208,7 @@
 
                     <!-- Description Text -->
                     <TextView
-                        android:id="@+id/AlertDescription"
+                        android:id="@+id/alertDescription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -215,11 +216,22 @@
                         android:textColor="#000000"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@id/AlertBell"
-                        app:layout_constraintTop_toBottomOf="@id/AlertBell"/>
+                        app:layout_constraintStart_toStartOf="@id/alertIcon"
+                        app:layout_constraintTop_toBottomOf="@id/alertIcon"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- No Alerts Message -->
+            <TextView
+                android:id="@+id/noAlertsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No recent alerts"
+                android:textColor="#999999"
+                android:textSize="14sp"
+                android:padding="16dp"
+                android:visibility="gone"/>
 
             <!-- Recipient Label -->
             <TextView
@@ -290,6 +302,8 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_phone"
+                        android:clickable="true"
+                        android:focusable="true"
                         app:tint="#014d86"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -455,49 +469,48 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/AlertBellPop"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/notifications_icon"
-                app:tint="#ff914d"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-            <!-- Accident Alert Title -->
-            <TextView
-                android:id="@+id/AlertTitlePop"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/accident_alert"
-                android:textColor="#ff914d"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:paddingStart="5dp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                <ImageView
+                    android:id="@+id/AlertBellPop"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/notifications_icon"
+                    app:tint="#ff914d"/>
 
-            <!-- Timestamp -->
+                <!-- Alert Title -->
+                <TextView
+                    android:id="@+id/AlertTitlePop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/accident_alert"
+                    android:textColor="#ff914d"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:paddingStart="5dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Timestamp -->
+                <TextView
+                    android:id="@+id/AlertTimePop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/alert_time_30m"
+                    android:textColor="#9E9E9E"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
             <TextView
-                android:id="@+id/AlertTimePop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/alert_time_30m"
-                android:textColor="#9E9E9E"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-            <TextView
+                android:id="@+id/AlertDescriptionPop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -506,6 +519,7 @@
                 android:textSize="14sp" />
 
             <TextView
+                android:id="@+id/AlertLocationPop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
