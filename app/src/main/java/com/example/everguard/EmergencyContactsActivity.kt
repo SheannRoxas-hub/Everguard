@@ -11,12 +11,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.everguard.databinding.ActivityEmergencyContactsBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 
 class EmergencyContactsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEmergencyContactsBinding
     private lateinit var auth: FirebaseAuth
-    private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     // Store contacts temporarily
     private val emergencyContacts = mutableMapOf<String, EmergencyContact>()
@@ -80,11 +79,11 @@ class EmergencyContactsActivity : AppCompatActivity() {
                     clearInputs()
                 }
                 .setNegativeButton("Continue") { _, _ ->
-                    saveAllContactsAndProceed()
+                    proceedToDevicePairing()
                 }
                 .show()
         } else {
-            saveAllContactsAndProceed()
+            proceedToDevicePairing()
         }
     }
 
@@ -96,47 +95,22 @@ class EmergencyContactsActivity : AppCompatActivity() {
         Toast.makeText(this, "Enter contact ${currentContactNumber} details", Toast.LENGTH_SHORT).show()
     }
 
-    private fun saveAllContactsAndProceed() {
+    private fun proceedToDevicePairing() {
         val userId = auth.currentUser?.uid
         if (userId == null) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // For now, we'll use a temporary device ID
-        // This will be replaced when you implement device pairing
-        val deviceId = "TEMP_${userId.take(8)}"
+        // Pass the emergency contacts to DevicePairingActivity
+        val intent = Intent(this, DevicePairingActivity::class.java)
 
-        val deviceRef = FirebaseDatabase.getInstance(databaseUrl)
-            .getReference("devices").child(deviceId)
+        // Convert the map to JSON string to pass via intent
+        val gson = Gson()
+        val contactsJson = gson.toJson(emergencyContacts)
+        intent.putExtra("emergencyContacts", contactsJson)
 
-        // Create device with emergency contacts
-        val device = Device(
-            deviceId = deviceId,
-            batteryStatus = "100%",
-            sensitivity = 3,
-            isSos = false,
-            emergencyContacts = emergencyContacts
-        )
-
-        deviceRef.setValue(device)
-            .addOnSuccessListener {
-                // Also update user's deviceId
-                val userRef = FirebaseDatabase.getInstance(databaseUrl)
-                    .getReference("users").child(userId)
-
-                userRef.child("deviceId").setValue(deviceId)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Emergency contacts saved!", Toast.LENGTH_SHORT).show()
-
-                        // Navigate to Device Pairing
-                        val intent = Intent(this, DevicePairingActivity::class.java)
-                        startActivity(intent)
-                    }
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to save: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
+        startActivity(intent)
     }
 
     private fun setupDropdowns() {
