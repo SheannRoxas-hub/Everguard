@@ -9,11 +9,19 @@ import androidx.core.view.WindowInsetsCompat
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import com.example.everguard.databinding.ActivityProfileBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
+    private lateinit var auth: FirebaseAuth
+    private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,17 +30,7 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //get recipient data from the intent
-        val contactFirstName = intent.getStringExtra("CONTACT_FIRST_NAME") ?: ""
-        val contactLastName = intent.getStringExtra("CONTACT_LAST_NAME") ?: ""
-        val contactRelationship = intent.getStringExtra("CONTACT_RELATIONSHIP") ?: ""
-        val contactMobile = intent.getStringExtra("CONTACT_MOBILE") ?: ""
-
-        //Set the recipient data to the TextViews
-        binding.recipientFname.text = contactFirstName
-        binding.recipientLname.text = contactLastName
-        binding.recipientRelationship.text = contactRelationship
-        binding.recipientMobile.text = contactMobile
+        auth = FirebaseAuth.getInstance()
 
         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
             androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
@@ -44,20 +42,11 @@ class ProfileActivity : AppCompatActivity() {
             insets
         }
 
-        //variable declaration: to extract values from the form of MainActivity.kt
-        val username = intent.getStringExtra("username")
-        val email = intent.getStringExtra("email")
-        val password = intent.getStringExtra("password")
+        // Load user profile data from Firebase
+        loadUserProfile()
 
-        //value set from the value extracted
-        val usernameTextView = binding.helloUser
-        usernameTextView.text = getString(R.string.hello_user, username)
-
-        val emailTextView = binding.email
-        emailTextView.text = email
-
-        val passwordTextView = binding.password
-        passwordTextView.setText(password)
+        // Load recipient data from Firebase
+        loadRecipientProfile()
 
         //adds the back function to registration
         val backArrow = binding.backArrow
@@ -79,17 +68,15 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.cardviewExpandableProfile.setOnClickListener {
             android.transition.TransitionManager.beginDelayedTransition(
-                binding.root, // Use binding.root to animate the whole screen
+                binding.root,
                 android.transition.AutoTransition()
             )
             if (expandableLayoutProfile.visibility == android.view.View.GONE) {
-                // Expand
                 expandableLayoutProfile.visibility = android.view.View.VISIBLE
-                arrowIconProfile.setImageResource(R.drawable.arrow_up) // Change icon to up
+                arrowIconProfile.setImageResource(R.drawable.arrow_up)
             } else {
-                // Collapse
                 expandableLayoutProfile.visibility = android.view.View.GONE
-                arrowIconProfile.setImageResource(R.drawable.arrow_down) // Change icon to down
+                arrowIconProfile.setImageResource(R.drawable.arrow_down)
             }
         }
 
@@ -99,17 +86,15 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.cardviewExpandableRecipientProfile.setOnClickListener {
             android.transition.TransitionManager.beginDelayedTransition(
-                binding.root, // Use binding.root to animate the whole screen
+                binding.root,
                 android.transition.AutoTransition()
             )
             if (expandableLayoutRecipientProfile.visibility == android.view.View.GONE) {
-                // Expand
                 expandableLayoutRecipientProfile.visibility = android.view.View.VISIBLE
-                arrowIconRecipientProfile.setImageResource(R.drawable.arrow_up) // Change icon to up
+                arrowIconRecipientProfile.setImageResource(R.drawable.arrow_up)
             } else {
-                // Collapse
                 expandableLayoutRecipientProfile.visibility = android.view.View.GONE
-                arrowIconRecipientProfile.setImageResource(R.drawable.arrow_down) // Change icon to down }
+                arrowIconRecipientProfile.setImageResource(R.drawable.arrow_down)
             }
         }
 
@@ -119,9 +104,8 @@ class ProfileActivity : AppCompatActivity() {
 
             if (binding.editProfileCardView.visibility == View.GONE) {
                 binding.editProfileCardView.visibility = View.VISIBLE
-                binding.editUsernameInput.setText(binding.helloUser.text.toString().replace("Hello, ", ""))
+                binding.editUsernameInput.setText(binding.helloUser.text.toString().replace("Hello, ", "").replace("!", ""))
                 binding.editEmailInput.setText(binding.email.text)
-                binding.editPasswordInput.setText(binding.password.text)
             } else {
                 binding.editProfileCardView.visibility = View.GONE
             }
@@ -129,9 +113,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // Back profile button click
         binding.backEditProfileBtn.setOnClickListener {
-
             android.transition.TransitionManager.beginDelayedTransition(binding.root)
-
             binding.editProfileCardView.visibility = View.GONE
         }
 
@@ -139,24 +121,11 @@ class ProfileActivity : AppCompatActivity() {
         binding.updateProfileChangesBtn.setOnClickListener {
             val newUsername = binding.editUsernameInput.text.toString().trim()
             val newEmail = binding.editEmailInput.text.toString().trim()
-            val newPassword = binding.editPasswordInput.text.toString().trim()
 
-            if (newUsername.isNotEmpty() && newEmail.isNotEmpty() && newPassword.isNotEmpty()) {
-
-                // Update Text
-                binding.helloUser.text = getString(R.string.hello_user, newUsername)
-                binding.email.text = newEmail
-                binding.password.setText(newPassword)
-
-                // Hide the edit card
-                android.transition.TransitionManager.beginDelayedTransition(binding.root)
-                binding.editProfileCardView.visibility = View.GONE
-
-                // how success message
-                android.widget.Toast.makeText(this, "Profile updated successfully!", android.widget.Toast.LENGTH_SHORT).show()
+            if (newUsername.isNotEmpty() && newEmail.isNotEmpty()) {
+                updateUserProfile(newUsername, newEmail)
             } else {
-                // Show error if fields are empty
-                android.widget.Toast.makeText(this, "All fields are required", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -168,7 +137,6 @@ class ProfileActivity : AppCompatActivity() {
 
             if (binding.editRecipientCardView.visibility == View.GONE) {
                 binding.editRecipientCardView.visibility = View.VISIBLE
-                // Pre-fill the input with current data
                 binding.editRecipientFnameInput.setText(binding.recipientFname.text)
                 binding.editRecipientLnameInput.setText(binding.recipientLname.text)
                 binding.editRelationshipInput.setText(binding.recipientRelationship.text)
@@ -180,10 +148,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // Back recipient button click
         binding.backEditRecipientBtn.setOnClickListener {
-            // Add smooth animation
             android.transition.TransitionManager.beginDelayedTransition(binding.root)
-
-            // Hide the edit card
             binding.editRecipientCardView.visibility = View.GONE
         }
 
@@ -194,40 +159,197 @@ class ProfileActivity : AppCompatActivity() {
             val newRelationship = binding.editRelationshipInput.text.toString().trim()
             val newMobile = binding.editMobileInput.text.toString().trim()
 
-            // Validation: Check if any fields are empty
-            if (newRecipientFname.isNotEmpty() && newRecipientLname.isNotEmpty() && newRelationship.isNotEmpty() && newMobile.isNotEmpty()) {
-
-                // Update the UI text immediately
-                binding.recipientFname.text = newRecipientFname
-                binding.recipientLname.text = newRecipientLname
-                binding.recipientRelationship.text = newRelationship
-                binding.recipientMobile.text = newMobile
-
-                // Hide the edit card smoothly
-                android.transition.TransitionManager.beginDelayedTransition(binding.root)
-                binding.editRecipientCardView.visibility = View.GONE
-
-                // Show success message
-                android.widget.Toast.makeText(this, "Recipient Profile updated successfully!", android.widget.Toast.LENGTH_SHORT).show()
+            if (newRecipientFname.isNotEmpty() && newRecipientLname.isNotEmpty() &&
+                newRelationship.isNotEmpty() && newMobile.isNotEmpty()) {
+                updateRecipientProfile(newRecipientFname, newRecipientLname, newRelationship, newMobile)
             } else {
-                // Show error if fields are empty
-                android.widget.Toast.makeText(this, "All fields are required", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun setupDropdowns() {
-        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Other")
+    private fun loadUserProfile() {
+        val userId = auth.currentUser?.uid ?: return
+        val database = FirebaseDatabase.getInstance(databaseUrl).getReference("users").child(userId)
 
-        // Use the helper to set up the AutoCompleteTextView
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = snapshot.getValue(User::class.java)
+                user?.let {
+                    binding.helloUser.text = "Hello, ${it.username}!"
+                    binding.email.text = it.email
+
+                    // Load care person details
+                    it.carePerson.let { carePerson ->
+                        binding.recipientFname.text = carePerson.fname
+                        binding.recipientLname.text = carePerson.lname
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(
+                    this@ProfileActivity,
+                    "Failed to load profile: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun loadRecipientProfile() {
+        val userId = auth.currentUser?.uid ?: return
+
+        // First get the user's deviceId
+        val userRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("users").child(userId)
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = snapshot.getValue(User::class.java)
+                val deviceId = user?.deviceId
+
+                if (!deviceId.isNullOrEmpty() && deviceId != "") {
+                    // Load emergency contacts from device
+                    loadEmergencyContacts(deviceId)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+    private fun loadEmergencyContacts(deviceId: String) {
+        val deviceRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("devices").child(deviceId).child("emergencyContacts")
+
+        deviceRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Get the first emergency contact to display
+                val firstContact = snapshot.children.firstOrNull()?.getValue(EmergencyContact::class.java)
+
+                firstContact?.let {
+                    binding.recipientRelationship.text = it.relationship
+                    binding.recipientMobile.text = it.contact
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+    private fun updateUserProfile(username: String, email: String) {
+        val userId = auth.currentUser?.uid ?: return
+        val database = FirebaseDatabase.getInstance(databaseUrl).getReference("users").child(userId)
+
+        val updates = hashMapOf<String, Any>(
+            "username" to username,
+            "email" to email
+        )
+
+        database.updateChildren(updates)
+            .addOnSuccessListener {
+                binding.helloUser.text = "Hello, $username!"
+                binding.email.text = email
+
+                android.transition.TransitionManager.beginDelayedTransition(binding.root)
+                binding.editProfileCardView.visibility = View.GONE
+
+                Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Update failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun updateRecipientProfile(firstName: String, lastName: String, relationship: String, mobile: String) {
+        val userId = auth.currentUser?.uid ?: return
+
+        // Update care person details (first and last name)
+        val carePersonRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("users").child(userId).child("carePerson")
+
+        val carePersonUpdates = hashMapOf<String, Any>(
+            "fname" to firstName,
+            "lname" to lastName
+        )
+
+        carePersonRef.updateChildren(carePersonUpdates)
+            .addOnSuccessListener {
+                // Now update emergency contact (relationship and mobile)
+                // First, get the deviceId
+                val userRef = FirebaseDatabase.getInstance(databaseUrl)
+                    .getReference("users").child(userId)
+
+                userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val user = snapshot.getValue(User::class.java)
+                        val deviceId = user?.deviceId
+
+                        if (!deviceId.isNullOrEmpty() && deviceId != "") {
+                            // Update the first emergency contact
+                            val contactRef = FirebaseDatabase.getInstance(databaseUrl)
+                                .getReference("devices").child(deviceId).child("emergencyContacts")
+
+                            contactRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(contactSnapshot: DataSnapshot) {
+                                    // Get the key of the first contact
+                                    val firstContactKey = contactSnapshot.children.firstOrNull()?.key
+
+                                    if (firstContactKey != null) {
+                                        val contactUpdates = hashMapOf<String, Any>(
+                                            "relationship" to relationship,
+                                            "contact" to mobile
+                                        )
+
+                                        contactRef.child(firstContactKey).updateChildren(contactUpdates)
+                                            .addOnSuccessListener {
+                                                // Update UI
+                                                binding.recipientFname.text = firstName
+                                                binding.recipientLname.text = lastName
+                                                binding.recipientRelationship.text = relationship
+                                                binding.recipientMobile.text = mobile
+
+                                                android.transition.TransitionManager.beginDelayedTransition(binding.root)
+                                                binding.editRecipientCardView.visibility = View.GONE
+
+                                                Toast.makeText(this@ProfileActivity, "Recipient Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Toast.makeText(this@ProfileActivity, "Failed to update contact: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(this@ProfileActivity, "Failed to load contacts: ${error.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@ProfileActivity, "Failed to load user: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Failed to update care person: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun setupDropdowns() {
+        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Doctor", "Guardian", "Other")
         setupAdapter(binding.editRelationshipInput, relationships)
     }
 
     private fun setupAdapter(view: AutoCompleteTextView, options: Array<String>) {
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, options)
         view.setAdapter(adapter)
-
-        // Ensures the dropdown opens immediately when the user taps the field
         view.setOnClickListener { view.showDropDown() }
     }
 }

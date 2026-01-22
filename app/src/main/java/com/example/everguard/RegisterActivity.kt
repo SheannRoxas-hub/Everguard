@@ -14,12 +14,13 @@ import com.example.everguard.databinding.ActivityRegisterBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
-
+    private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,8 +113,8 @@ class RegisterActivity : AppCompatActivity() {
                 binding.passwordInput.requestFocus()
             }
 
-            !password.matches(passwordRegex)-> {
-                showError(binding.passwordLayout, "Password must have atleast one uppercase, lowercase, digit, special character")
+            !password.matches(passwordRegex) -> {
+                showError(binding.passwordLayout, "Password must have at least one uppercase, lowercase, digit, special character")
                 binding.passwordInput.requestFocus()
             }
 
@@ -143,20 +144,44 @@ class RegisterActivity : AppCompatActivity() {
                         if (task.isSuccessful) {
                             val user = auth.currentUser
 
-                            // 1. Send the email
-                            user?.sendEmailVerification()?.addOnCompleteListener { verifyTask ->
-                                if (verifyTask.isSuccessful) {
-                                    // 2. Redirect to the "Waiting" screen
-                                    val intent = Intent(this, RegAuthActivity::class.java)
-                                    startActivity(intent)
-                                }
+                            user?.let {
+                                // Get current date
+                                val currentDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                                    .format(java.util.Date())
+
+                                // Create user object with basic info only
+                                val userProfile = User(
+                                    username = username,
+                                    email = email,
+                                    createdAt = currentDate,
+                                    deviceId = "", // Will be set during device pairing
+                                    carePerson = CarePerson() // Empty for now, will be filled in UserDetailsActivity
+                                )
+
+                                // Save to Realtime Database
+                                val database = Firebase.database(databaseUrl).getReference("users").child(it.uid)
+                                database.setValue(userProfile)
+                                    .addOnSuccessListener { _ ->
+                                        // Send verification email after successful database save
+                                        user.sendEmailVerification()?.addOnCompleteListener { verifyTask ->
+                                            if (verifyTask.isSuccessful) {
+                                                Toast.makeText(this, "Registration successful! Please verify your email.", Toast.LENGTH_SHORT).show()
+                                                val intent = Intent(this, RegAuthActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                        }
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        binding.registrationBtn.isEnabled = true
+                                        Toast.makeText(this, "Database Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                    }
                             }
                         } else {
                             binding.registrationBtn.isEnabled = true
                             Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
-
             }
         }
     }
@@ -166,7 +191,7 @@ class RegisterActivity : AppCompatActivity() {
         layout.isErrorEnabled = false
     }
 
-    private fun showError (layout: TextInputLayout, message: String) {
+    private fun showError(layout: TextInputLayout, message: String) {
         layout.isErrorEnabled = true
         layout.error = message
     }

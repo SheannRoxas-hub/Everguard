@@ -10,16 +10,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.everguard.databinding.ActivityEmergencyContactsBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class EmergencyContactsActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityEmergencyContactsBinding
+    private lateinit var auth: FirebaseAuth
+    private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+    // Store contacts temporarily
+    private val emergencyContacts = mutableMapOf<String, EmergencyContact>()
+    private var currentContactNumber = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityEmergencyContactsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        auth = FirebaseAuth.getInstance()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -39,42 +48,105 @@ class EmergencyContactsActivity : AppCompatActivity() {
     }
 
     private fun handleValidationAndNext() {
-        val name = binding.firstNameInput.text.toString().trim()
-        val phone = binding.mobileNumberInput.text.toString().trim()
+        val contactFirstName = binding.firstNameInput.text.toString().trim()
+        val contactLastName = binding.lastNameInput.text.toString().trim()
         val relationship = binding.relationshipInput.text.toString()
+        val mobile = binding.mobileNumberInput.text.toString().trim()
 
-        // BASIC VALIDATION
-        if (name.isEmpty() || phone.isEmpty() || relationship.isEmpty()) {
+        // Validation
+        if (contactFirstName.isEmpty() || contactLastName.isEmpty() ||
+            relationship.isEmpty() || mobile.isEmpty()) {
             Toast.makeText(this, "Please fill in all contact details", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Navigate to next screen
-        val intent = Intent(this, DevicePairingActivity::class.java)
-        startActivity(intent)
+        // Add current contact to the map
+        val contact = EmergencyContact(
+            fname = contactFirstName,
+            lname = contactLastName,
+            relationship = relationship,
+            contact = mobile
+        )
 
-        // Extract values from the TextInputEditTexts
-        intent.putExtra("CONTACT_FIRST_NAME", binding.firstNameInput.text.toString())
-        intent.putExtra("CONTACT_LAST_NAME", binding.lastNameInput.text.toString())
-        intent.putExtra("CONTACT_RELATIONSHIP", binding.relationshipInput.text.toString())
-        intent.putExtra("CONTACT_MOBILE", binding.mobileNumberInput.text.toString())
+        emergencyContacts["emgperson$currentContactNumber"] = contact
 
+        // Ask if they want to add more contacts (max 3)
+        if (currentContactNumber < 3) {
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Add Another Contact?")
+                .setMessage("You can add up to ${3 - currentContactNumber} more emergency contact(s).")
+                .setPositiveButton("Add Another") { _, _ ->
+                    currentContactNumber++
+                    clearInputs()
+                }
+                .setNegativeButton("Continue") { _, _ ->
+                    saveAllContactsAndProceed()
+                }
+                .show()
+        } else {
+            saveAllContactsAndProceed()
+        }
+    }
+
+    private fun clearInputs() {
+        binding.firstNameInput.text?.clear()
+        binding.lastNameInput.text?.clear()
+        binding.relationshipInput.text?.clear()
+        binding.mobileNumberInput.text?.clear()
+        Toast.makeText(this, "Enter contact ${currentContactNumber} details", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveAllContactsAndProceed() {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // For now, we'll use a temporary device ID
+        // This will be replaced when you implement device pairing
+        val deviceId = "TEMP_${userId.take(8)}"
+
+        val deviceRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("devices").child(deviceId)
+
+        // Create device with emergency contacts
+        val device = Device(
+            deviceId = deviceId,
+            batteryStatus = "100%",
+            sensitivity = 3,
+            isSos = false,
+            emergencyContacts = emergencyContacts
+        )
+
+        deviceRef.setValue(device)
+            .addOnSuccessListener {
+                // Also update user's deviceId
+                val userRef = FirebaseDatabase.getInstance(databaseUrl)
+                    .getReference("users").child(userId)
+
+                userRef.child("deviceId").setValue(deviceId)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Emergency contacts saved!", Toast.LENGTH_SHORT).show()
+
+                        // Navigate to Device Pairing
+                        val intent = Intent(this, DevicePairingActivity::class.java)
+                        startActivity(intent)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Failed to save: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun setupDropdowns() {
-        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Other")
-
-        // Use the helper to set up the AutoCompleteTextView
+        val relationships = arrayOf("Parent", "Sibling", "Spouse", "Child", "Friend", "Doctor", "Guardian", "Other")
         setupAdapter(binding.relationshipInput, relationships)
     }
 
     private fun setupAdapter(view: AutoCompleteTextView, options: Array<String>) {
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, options)
         view.setAdapter(adapter)
-
-        // Ensures the dropdown opens immediately when the user taps the field
         view.setOnClickListener { view.showDropDown() }
     }
 }
-
-
