@@ -1,6 +1,7 @@
 package com.example.everguard
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class NotificationsFragment : Fragment() {
 
@@ -43,11 +45,6 @@ class NotificationsFragment : Fragment() {
 
         setupRecyclerView()
         getUserDeviceId()
-
-        // Create Test Notifications button
-        // binding.btnCreateTestData.setOnClickListener {
-            // createTestNotificationsInFirebase()
-        // }
 
         // Dim Overlay
         binding.dimOverlay2.setOnClickListener {
@@ -114,6 +111,8 @@ class NotificationsFragment : Fragment() {
 
         notifsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 notifications.clear()
 
                 for (notifSnapshot in snapshot.children) {
@@ -124,17 +123,14 @@ class NotificationsFragment : Fragment() {
                     val date = notifSnapshot.child("date").getValue(String::class.java) ?: ""
                     val notifDeviceId = notifSnapshot.child("deviceId").getValue(String::class.java) ?: ""
 
-                    // ONLY show notifications for this user's device
                     if (notifDeviceId == deviceId) {
                         val notification = Notification(type, title, description, location, date, deviceId = notifDeviceId, readBy = listOf())
                         notifications.add(notification)
                     }
                 }
 
-                // Sort by date (most recent first)
                 notifications.sortByDescending { parseNotificationDate(it.date) }
 
-                // Show/hide empty state
                 if (notifications.isEmpty()) {
                     binding.notificationsRecyclerView.visibility = View.GONE
                     binding.emptyStateText.visibility = View.VISIBLE
@@ -147,6 +143,8 @@ class NotificationsFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 Toast.makeText(requireContext(), "Failed to load notifications", Toast.LENGTH_SHORT).show()
             }
         })
@@ -158,13 +156,35 @@ class NotificationsFragment : Fragment() {
         binding.AlertTimePop2.text = getTimeAgo(notification.date)
         binding.AlertDescriptionPop2.text = notification.description
 
-        // Set color based on type
-        val color = when {
-            notification.type.contains("Fall", ignoreCase = true) ||
-                    notification.type.contains("Accident", ignoreCase = true) -> 0xFFFF914D.toInt()
-            notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt()
-            notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt()
-            else -> 0xFFFF914D.toInt()
+        // Display location as clickable link with user-friendly text
+        if (notification.location.isNotEmpty()) {
+            binding.AlertLocationPop2.text = "View Location on Map"
+            binding.AlertLocationPop2.setTextColor(0xFF0066CC.toInt()) // Blue color for link
+            binding.AlertLocationPop2.paintFlags = binding.AlertLocationPop2.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+            binding.AlertLocationPop2.setOnClickListener {
+                openMapLocation(notification.location)
+            }
+        } else {
+            binding.AlertLocationPop2.text = "Location not available"
+            binding.AlertLocationPop2.setTextColor(0xFF666666.toInt())
+            binding.AlertLocationPop2.paintFlags = binding.AlertLocationPop2.paintFlags and android.graphics.Paint.UNDERLINE_TEXT_FLAG.inv()
+            binding.AlertLocationPop2.setOnClickListener(null)
+        }
+
+        // Check if notification is older than 1 day
+        val isOld = isNotificationOld(notification.date)
+
+        // Set color based on type and age
+        val color = if (isOld) {
+            0xFF808080.toInt() // Grey for old notifications
+        } else {
+            when {
+                notification.type.contains("Fall", ignoreCase = true) ||
+                        notification.type.contains("Accident", ignoreCase = true) -> 0xFFFF914D.toInt() // Yellow/Orange
+                notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt() // Red
+                notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt() // Dark Red
+                else -> 0xFFFF914D.toInt() // Default yellow/orange
+            }
         }
 
         binding.AlertBellPop2.setColorFilter(color)
@@ -174,63 +194,42 @@ class NotificationsFragment : Fragment() {
         binding.dimOverlay2.visibility = View.VISIBLE
     }
 
-    private fun createTestNotificationsInFirebase() {
-        if (deviceId.isEmpty()) {
-            Toast.makeText(requireContext(), "No device paired. Cannot create notifications.", Toast.LENGTH_SHORT).show()
-            return
+    private fun openMapLocation(locationUrl: String) {
+        try {
+            var url = locationUrl.trim()
+
+            // Remove any whitespace or newlines
+            url = url.replace("\\s+".toRegex(), "")
+
+            // Ensure URL has proper scheme
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://$url"
+            }
+
+            // Create intent with the URL
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+
+            // Try to start the activity
+            if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(intent)
+            } else {
+                Toast.makeText(requireContext(), "No app available to open this link", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Invalid URL: ${e.message}", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
         }
+    }
 
-        val notifsRef = FirebaseDatabase.getInstance(databaseUrl).getReference("notifs")
-        val currentTime = Date()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-        // Create 3 test notifications with CURRENT timestamps
-        val testNotifications = listOf(
-            // Fall Alert - just now
-            mapOf(
-                "type" to "Fall Alert",
-                "title" to "Accident Alert",
-                "description" to "A fall has been detected!",
-                "location" to "https://maps.google.com",
-                "date" to dateFormat.format(currentTime),
-                "deviceId" to deviceId
-            ),
+    private fun isNotificationOld(dateStr: String): Boolean {
+        val notificationDate = parseNotificationDate(dateStr)
+        val now = Date()
+        val diffInMillis = now.time - notificationDate.time
+        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
 
-            // SOS Alert - just now
-            mapOf(
-                "type" to "SOS Alert",
-                "title" to "SOS Alert",
-                "description" to "Juan Dela Cruz needs immediate help!",
-                "location" to "https://maps.google.com",
-                "date" to dateFormat.format(currentTime),
-                "deviceId" to deviceId
-            ),
-
-            // Low Battery - just now
-            mapOf(
-                "type" to "Battery Alert",
-                "title" to "Low Battery Alert",
-                "description" to "The device only has 20% charge left!",
-                "location" to "https://maps.google.com",
-                "date" to dateFormat.format(currentTime),
-                "deviceId" to deviceId
-            )
-        )
-
-        var successCount = 0
-        testNotifications.forEachIndexed { index, notifData ->
-            val notifId = "TEST_${System.currentTimeMillis()}_$index"
-            notifsRef.child(notifId).setValue(notifData)
-                .addOnSuccessListener {
-                    successCount++
-                    if (successCount == testNotifications.size) {
-                        Toast.makeText(requireContext(), "Created 3 test notifications!", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(requireContext(), "Failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
-        }
+        return diffInDays >= 1 // 1 day or older
     }
 
     private fun parseNotificationDate(dateStr: String): Date {
