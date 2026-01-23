@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import com.example.everguard.databinding.FragmentHomeBinding
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -29,6 +28,9 @@ class HomeFragment : Fragment() {
     private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     private var recipientPhoneNumber: String = ""
+    private var deviceId: String = ""
+    private var firstEmergencyContactNumber: String = ""
+    private var currentSensitivity: Int = 2
     private val CALL_PERMISSION_CODE = 100
     private val SMS_PERMISSION_CODE = 101
 
@@ -49,6 +51,9 @@ class HomeFragment : Fragment() {
 
         // Load senior details
         loadSeniorDetails()
+
+        // Load device data (battery, sensitivity)
+        loadDeviceData()
 
         // Load most recent notification
         loadRecentNotification()
@@ -77,7 +82,7 @@ class HomeFragment : Fragment() {
         // SMS button in alert popup
         binding.btnSms.setOnClickListener {
             if (recipientPhoneNumber.isNotEmpty()) {
-                sendSMS(recipientPhoneNumber)
+                sendSMS(recipientPhoneNumber, "Emergency alert from Everguard app!")
             } else {
                 Toast.makeText(requireContext(), "No phone number available", Toast.LENGTH_SHORT).show()
             }
@@ -90,6 +95,19 @@ class HomeFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "No phone number available", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Sensitivity slider listener
+        binding.sensitivitySlider.addOnChangeListener { slider, value, fromUser ->
+            if (fromUser) {
+                val sensitivityLevel = value.toInt()
+                updateSensitivityInDatabase(sensitivityLevel)
+            }
+        }
+
+        // Test Alert button
+        binding.btnTestAlert.setOnClickListener {
+            sendTestAlert()
         }
 
         binding.homeKebabMenu.setOnClickListener { v ->
@@ -107,6 +125,8 @@ class HomeFragment : Fragment() {
                 val user = snapshot.getValue(User::class.java)
                 user?.let {
                     binding.helloUser.text = "Hello, ${it.username}!"
+                    // Store deviceId for later use
+                    deviceId = it.deviceId
                 }
             }
 
@@ -140,7 +160,6 @@ class HomeFragment : Fragment() {
                 }
             }
 
-            // FIX: Add 'override fun' keyword
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(
                     requireContext(),
@@ -149,6 +168,132 @@ class HomeFragment : Fragment() {
                 ).show()
             }
         })
+    }
+
+    private fun loadDeviceData() {
+        val userId = auth.currentUser?.uid ?: return
+
+        // Get deviceId from user
+        val userRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("users").child(userId)
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = snapshot.getValue(User::class.java)
+                deviceId = user?.deviceId ?: ""
+
+                if (deviceId.isNotEmpty() && deviceId != "") {
+                    // Load device data
+                    loadDeviceInfo(deviceId)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Failed to load device ID", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun loadDeviceInfo(deviceId: String) {
+        val deviceRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("devices").child(deviceId)
+
+        deviceRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val device = snapshot.getValue(Device::class.java)
+                device?.let {
+                    // Update battery percentage
+                    binding.BatteryPercent.text = it.batteryStatus
+
+                    // Update battery icon based on percentage
+                    updateBatteryIcon(it.batteryStatus)
+
+                    // Update sensitivity slider
+                    currentSensitivity = it.sensitivity
+                    binding.sensitivitySlider.value = it.sensitivity.toFloat()
+
+                    // Load first emergency contact for test alert
+                    loadFirstEmergencyContact(it.emergencyContacts)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Failed to load device data", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun updateBatteryIcon(batteryStatus: String) {
+        // Extract percentage number from string like "85%" or "100%"
+        val percentage = batteryStatus.replace("%", "").toIntOrNull() ?: 100
+
+        when {
+            percentage > 75 -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery_full)
+            percentage > 50 -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery_full)
+            percentage > 25 -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery)
+            else -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery)
+        }
+    }
+
+    private fun loadFirstEmergencyContact(contacts: Map<String, EmergencyContact>) {
+        // Get the first emergency contact (emgperson1)
+        val firstContact = contacts["emgperson1"]
+        firstEmergencyContactNumber = firstContact?.contact ?: ""
+    }
+
+    private fun updateSensitivityInDatabase(sensitivity: Int) {
+        if (deviceId.isEmpty()) {
+            Toast.makeText(requireContext(), "No device paired", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val deviceRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("devices").child(deviceId)
+
+        deviceRef.child("sensitivity").setValue(sensitivity)
+            .addOnSuccessListener {
+                currentSensitivity = sensitivity
+                val levelText = when (sensitivity) {
+                    1 -> "Low"
+                    2 -> "Medium"
+                    3 -> "High"
+                    else -> "Medium"
+                }
+                Toast.makeText(
+                    requireContext(),
+                    "Sensitivity set to $levelText",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to update sensitivity: ${exception.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+    private fun sendTestAlert() {
+        if (firstEmergencyContactNumber.isEmpty()) {
+            Toast.makeText(
+                requireContext(),
+                "No emergency contact found",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val sensitivityText = when (currentSensitivity) {
+            1 -> "Low"
+            2 -> "Medium"
+            3 -> "High"
+            else -> "Medium"
+        }
+
+        val message = "Test Alert worked. Sensitivity level set to $currentSensitivity ($sensitivityText)"
+
+        sendSMS(firstEmergencyContactNumber, message)
     }
 
     private fun loadRecentNotification() {
@@ -165,6 +310,7 @@ class HomeFragment : Fragment() {
                 if (deviceId.isEmpty()) {
                     // No device, hide alert card
                     binding.AccidentAlert.visibility = View.GONE
+                    binding.noAlertsText.visibility = View.VISIBLE
                     return
                 }
 
@@ -205,9 +351,11 @@ class HomeFragment : Fragment() {
                         // Display the most recent notification
                         if (notifications.isNotEmpty()) {
                             binding.AccidentAlert.visibility = View.VISIBLE
+                            binding.noAlertsText.visibility = View.GONE
                             displayRecentAlert(notifications[0])
                         } else {
                             binding.AccidentAlert.visibility = View.GONE
+                            binding.noAlertsText.visibility = View.VISIBLE
                         }
                     }
 
@@ -237,49 +385,46 @@ class HomeFragment : Fragment() {
         // Update time ago
         binding.alertTime.text = getTimeAgo(notification.date)
 
-        // Set alert icon and color based on type
-        when {
+        // Update popup content as well
+        binding.AlertTitlePop.text = notification.title
+        binding.AlertDescriptionPop.text = notification.description
+        binding.AlertTimePop.text = getTimeAgo(notification.date)
+        binding.AlertLocationPop.text = notification.location.ifEmpty { "Location not available" }
+
+        // Set alert icon based on type
+        val iconRes = when {
             notification.type.contains("Fall", ignoreCase = true) ||
-                    notification.type.contains("Accident", ignoreCase = true) -> {
-                binding.alertIcon.setImageResource(R.drawable.notifications_icon)
-                // Set orange color if you have it
-            }
-            notification.type.contains("SOS", ignoreCase = true) -> {
-                binding.alertIcon.setImageResource(R.drawable.notifications_icon)
-                // Set red color if you have it
-            }
-            notification.type.contains("Battery", ignoreCase = true) -> {
-                binding.alertIcon.setImageResource(R.drawable.ic_battery)
-                // Set red color if you have it
-            }
+                    notification.type.contains("Accident", ignoreCase = true) -> R.drawable.notifications_icon
+            notification.type.contains("SOS", ignoreCase = true) -> R.drawable.notifications_icon
+            notification.type.contains("Battery", ignoreCase = true) -> R.drawable.ic_battery
+            else -> R.drawable.notifications_icon
         }
+        binding.alertIcon.setImageResource(iconRes)
+        binding.AlertBellPop.setImageResource(iconRes)
     }
 
     private fun makePhoneCall(phoneNumber: String) {
-        // Check if permission is granted
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.CALL_PHONE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Request permission
             requestPermissions(
                 arrayOf(Manifest.permission.CALL_PHONE),
                 CALL_PERMISSION_CODE
             )
         } else {
-            // Permission already granted, make the call
             val callIntent = Intent(Intent.ACTION_CALL)
             callIntent.data = Uri.parse("tel:$phoneNumber")
             startActivity(callIntent)
         }
     }
 
-    private fun sendSMS(phoneNumber: String) {
+    private fun sendSMS(phoneNumber: String, message: String) {
         try {
             val smsIntent = Intent(Intent.ACTION_VIEW)
             smsIntent.data = Uri.parse("sms:$phoneNumber")
-            smsIntent.putExtra("sms_body", "Emergency alert from Everguard app!")
+            smsIntent.putExtra("sms_body", message)
             startActivity(smsIntent)
         } catch (e: Exception) {
             Toast.makeText(
@@ -300,7 +445,6 @@ class HomeFragment : Fragment() {
         when (requestCode) {
             CALL_PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission granted, make the call
                     if (recipientPhoneNumber.isNotEmpty()) {
                         makePhoneCall(recipientPhoneNumber)
                     }
@@ -320,7 +464,6 @@ class HomeFragment : Fragment() {
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             format.parse(dateStr) ?: Date(0)
         } catch (e: Exception) {
-            // Try alternative format
             try {
                 val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 format.parse(dateStr) ?: Date(0)
