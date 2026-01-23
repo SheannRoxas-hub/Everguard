@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener
 import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -122,15 +123,18 @@ class HomeFragment : Fragment() {
 
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 val user = snapshot.getValue(User::class.java)
                 user?.let {
                     binding.helloUser.text = "Hello, ${it.username}!"
-                    // Store deviceId for later use
                     deviceId = it.deviceId
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 Toast.makeText(
                     requireContext(),
                     "Failed to load user data: ${error.message}",
@@ -147,20 +151,20 @@ class HomeFragment : Fragment() {
 
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 val user = snapshot.getValue(User::class.java)
                 user?.carePerson?.let { carePerson ->
                     binding.recipientName.text = "${carePerson.fname} ${carePerson.lname}"
-
-                    // Store phone number for calling
                     recipientPhoneNumber = carePerson.contact
-
-                    // Calculate and display age
                     val age = calculateAge(carePerson.bdate)
                     binding.recipientAge.text = "Age: $age"
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 Toast.makeText(
                     requireContext(),
                     "Failed to load senior details: ${error.message}",
@@ -200,24 +204,21 @@ class HomeFragment : Fragment() {
 
         deviceRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 val device = snapshot.getValue(Device::class.java)
                 device?.let {
-                    // Update battery percentage
                     binding.BatteryPercent.text = it.batteryStatus
-
-                    // Update battery icon based on percentage
                     updateBatteryIcon(it.batteryStatus)
-
-                    // Update sensitivity slider
                     currentSensitivity = it.sensitivity
                     binding.sensitivitySlider.value = it.sensitivity.toFloat()
-
-                    // Load first emergency contact for test alert
                     loadFirstEmergencyContact(it.emergencyContacts)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 Toast.makeText(requireContext(), "Failed to load device data", Toast.LENGTH_SHORT).show()
             }
         })
@@ -299,27 +300,28 @@ class HomeFragment : Fragment() {
     private fun loadRecentNotification() {
         val userId = auth.currentUser?.uid ?: return
 
-        // First get user's deviceId
         val userRef = FirebaseDatabase.getInstance(databaseUrl)
             .getReference("users").child(userId)
 
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(userSnapshot: DataSnapshot) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 val deviceId = userSnapshot.child("deviceId").getValue(String::class.java) ?: ""
 
                 if (deviceId.isEmpty()) {
-                    // No device, hide alert card
                     binding.AccidentAlert.visibility = View.GONE
                     binding.noAlertsText.visibility = View.VISIBLE
                     return
                 }
 
-                // Load notifications for this device only
                 val notifsRef = FirebaseDatabase.getInstance(databaseUrl)
                     .getReference("notifs")
 
                 notifsRef.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!isAdded || _binding == null) return // Add this check
+
                         val notifications = mutableListOf<Notification>()
 
                         for (notifSnapshot in snapshot.children) {
@@ -330,7 +332,6 @@ class HomeFragment : Fragment() {
                             val date = notifSnapshot.child("date").getValue(String::class.java) ?: ""
                             val notifDeviceId = notifSnapshot.child("deviceId").getValue(String::class.java) ?: ""
 
-                            // ONLY load notifications for this user's device
                             if (notifDeviceId == deviceId) {
                                 val notification = Notification(
                                     type = type,
@@ -345,10 +346,8 @@ class HomeFragment : Fragment() {
                             }
                         }
 
-                        // Sort by date (most recent first)
                         notifications.sortByDescending { parseNotificationDate(it.date) }
 
-                        // Display the most recent notification
                         if (notifications.isNotEmpty()) {
                             binding.AccidentAlert.visibility = View.VISIBLE
                             binding.noAlertsText.visibility = View.GONE
@@ -360,6 +359,8 @@ class HomeFragment : Fragment() {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
+                        if (!isAdded || _binding == null) return // Add this check
+
                         Toast.makeText(
                             requireContext(),
                             "Failed to load notifications: ${error.message}",
@@ -370,14 +371,33 @@ class HomeFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 Toast.makeText(requireContext(), "Failed to load user data", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun displayRecentAlert(notification: Notification) {
-        // Update alert title
+        // Check if notification is older than 1 day
+        val isOld = isNotificationOld(notification.date)
+
+        // Set color based on type and age
+        val color = if (isOld) {
+            0xFF808080.toInt() // Grey for old notifications
+        } else {
+            when {
+                notification.type.contains("Fall", ignoreCase = true) ||
+                        notification.type.contains("Accident", ignoreCase = true) -> 0xFFFF914D.toInt() // Yellow/Orange
+                notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt() // Red
+                notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt() // Dark Red
+                else -> 0xFFFF914D.toInt() // Default yellow/orange
+            }
+        }
+
+        // Update alert title with color
         binding.alertTitle.text = notification.title
+        binding.alertTitle.setTextColor(color)
 
         // Update alert description
         binding.alertDescription.text = notification.description
@@ -385,13 +405,29 @@ class HomeFragment : Fragment() {
         // Update time ago
         binding.alertTime.text = getTimeAgo(notification.date)
 
-        // Update popup content as well
+        // Update popup content
         binding.AlertTitlePop.text = notification.title
+        binding.AlertTitlePop.setTextColor(color)
         binding.AlertDescriptionPop.text = notification.description
         binding.AlertTimePop.text = getTimeAgo(notification.date)
-        binding.AlertLocationPop.text = notification.location.ifEmpty { "Location not available" }
 
-        // Set alert icon based on type
+        // Make location clickable and display properly
+        if (notification.location.isNotEmpty()) {
+            // Display shorter, user-friendly text
+            binding.AlertLocationPop.text = "View Location on Map"
+            binding.AlertLocationPop.setTextColor(0xFF0066CC.toInt()) // Blue color for link
+            binding.AlertLocationPop.paintFlags = binding.AlertLocationPop.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+            binding.AlertLocationPop.setOnClickListener {
+                openMapLocation(notification.location)
+            }
+        } else {
+            binding.AlertLocationPop.text = "Location not available"
+            binding.AlertLocationPop.setTextColor(0xFF666666.toInt())
+            binding.AlertLocationPop.paintFlags = binding.AlertLocationPop.paintFlags and android.graphics.Paint.UNDERLINE_TEXT_FLAG.inv()
+            binding.AlertLocationPop.setOnClickListener(null)
+        }
+
+        // Set alert icon based on type with color filter
         val iconRes = when {
             notification.type.contains("Fall", ignoreCase = true) ||
                     notification.type.contains("Accident", ignoreCase = true) -> R.drawable.notifications_icon
@@ -400,7 +436,47 @@ class HomeFragment : Fragment() {
             else -> R.drawable.notifications_icon
         }
         binding.alertIcon.setImageResource(iconRes)
+        binding.alertIcon.setColorFilter(color)
         binding.AlertBellPop.setImageResource(iconRes)
+        binding.AlertBellPop.setColorFilter(color)
+    }
+
+
+    private fun openMapLocation(locationUrl: String) {
+        try {
+            var url = locationUrl.trim()
+
+            // Remove any whitespace or newlines
+            url = url.replace("\\s+".toRegex(), "")
+
+            // Ensure URL has proper scheme
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://$url"
+            }
+
+            // Create intent with the URL
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+
+            // Try to start the activity
+            if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(intent)
+            } else {
+                Toast.makeText(requireContext(), "No app available to open this link", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Invalid URL: ${e.message}", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+        }
+    }
+
+    private fun isNotificationOld(dateStr: String): Boolean {
+        val notificationDate = parseNotificationDate(dateStr)
+        val now = Date()
+        val diffInMillis = now.time - notificationDate.time
+        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+
+        return diffInDays >= 1 // 1 day or older
     }
 
     private fun makePhoneCall(phoneNumber: String) {

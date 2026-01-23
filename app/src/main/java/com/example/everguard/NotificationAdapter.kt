@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class NotificationAdapter(
     private val notifications: List<Notification>,
@@ -34,67 +35,35 @@ class NotificationAdapter(
         holder.description.text = notification.description
         holder.time.text = getTimeAgo(notification.date)
 
-        // Calculate time difference for color coding
-        val notificationDate = parseNotificationDate(notification.date)
-        val now = Date()
-        val diffInHours = (now.time - notificationDate.time) / (1000 * 60 * 60)
+        // Check if notification is older than 1 day
+        val isOld = isNotificationOld(notification.date)
 
-        // Determine if notification is "old" (>24 hours)
-        val isOld = diffInHours >= 24
-
-        // Set icon and color based on type and age
-        when {
-            notification.type.contains("Fall", ignoreCase = true) ||
-                    notification.type.contains("Accident", ignoreCase = true) -> {
-                holder.icon.setImageResource(R.drawable.notifications_icon)
-                if (isOld) {
-                    // Gray for old notifications
-                    holder.icon.setColorFilter(holder.itemView.context.getColor(android.R.color.darker_gray))
-                    holder.title.setTextColor(holder.itemView.context.getColor(android.R.color.darker_gray))
-                    holder.description.setTextColor(holder.itemView.context.getColor(android.R.color.darker_gray))
-                } else {
-                    // Orange for recent fall/accident alerts
-                    holder.icon.setColorFilter(0xFFFF914D.toInt()) // #ff914d
-                    holder.title.setTextColor(0xFFFF914D.toInt())
-                    holder.description.setTextColor(holder.itemView.context.getColor(android.R.color.black))
-                }
-            }
-            notification.type.contains("SOS", ignoreCase = true) -> {
-                holder.icon.setImageResource(R.drawable.notifications_icon)
-                if (isOld) {
-                    // Gray for old notifications
-                    holder.icon.setColorFilter(holder.itemView.context.getColor(android.R.color.darker_gray))
-                    holder.title.setTextColor(holder.itemView.context.getColor(android.R.color.darker_gray))
-                    holder.description.setTextColor(holder.itemView.context.getColor(android.R.color.darker_gray))
-                } else {
-                    // Red for recent SOS
-                    holder.icon.setColorFilter(0xFFDC3030.toInt()) // #dc3030
-                    holder.title.setTextColor(0xFFDC3030.toInt())
-                    holder.description.setTextColor(holder.itemView.context.getColor(android.R.color.black))
-                }
-            }
-            notification.type.contains("Battery", ignoreCase = true) -> {
-                holder.icon.setImageResource(R.drawable.notifications_icon)
-                if (isOld) {
-                    // Gray for old notifications
-                    holder.icon.setColorFilter(holder.itemView.context.getColor(android.R.color.darker_gray))
-                    holder.title.setTextColor(holder.itemView.context.getColor(android.R.color.darker_gray))
-                    holder.description.setTextColor(holder.itemView.context.getColor(android.R.color.darker_gray))
-                } else {
-                    // Dark red for recent battery alerts
-                    holder.icon.setColorFilter(0xFF910000.toInt()) // #910000
-                    holder.title.setTextColor(0xFF910000.toInt())
-                    holder.description.setTextColor(holder.itemView.context.getColor(android.R.color.black))
-                }
-            }
-            else -> {
-                // Default styling
-                holder.icon.setImageResource(R.drawable.notifications_icon)
-                holder.icon.setColorFilter(holder.itemView.context.getColor(android.R.color.darker_gray))
-                holder.title.setTextColor(holder.itemView.context.getColor(android.R.color.black))
-                holder.description.setTextColor(holder.itemView.context.getColor(android.R.color.black))
+        // Set color based on type and age
+        val color = if (isOld) {
+            0xFF808080.toInt() // Grey for old notifications
+        } else {
+            when {
+                notification.type.contains("Fall", ignoreCase = true) ||
+                        notification.type.contains("Accident", ignoreCase = true) -> 0xFFFF914D.toInt() // Yellow/Orange
+                notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt() // Red
+                notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt() // Dark Red
+                else -> 0xFFFF914D.toInt()
             }
         }
+
+        // Apply color to title and icon
+        holder.title.setTextColor(color)
+        holder.icon.setColorFilter(color)
+
+        // Set icon based on type
+        val iconRes = when {
+            notification.type.contains("Fall", ignoreCase = true) ||
+                    notification.type.contains("Accident", ignoreCase = true) -> R.drawable.notifications_icon
+            notification.type.contains("SOS", ignoreCase = true) -> R.drawable.notifications_icon
+            notification.type.contains("Battery", ignoreCase = true) -> R.drawable.ic_battery
+            else -> R.drawable.notifications_icon
+        }
+        holder.icon.setImageResource(iconRes)
 
         holder.itemView.setOnClickListener {
             onItemClick(notification)
@@ -110,6 +79,15 @@ class NotificationAdapter(
         } catch (e: Exception) {
             Date(0)
         }
+    }
+
+    private fun isNotificationOld(dateStr: String): Boolean {
+        val notificationDate = parseNotificationDate(dateStr)
+        val now = Date()
+        val diffInMillis = now.time - notificationDate.time
+        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+
+        return diffInDays >= 1
     }
 
     private fun getTimeAgo(dateStr: String): String {

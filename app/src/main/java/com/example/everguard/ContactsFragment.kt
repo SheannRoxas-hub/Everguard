@@ -25,7 +25,7 @@ class ContactsFragment : Fragment() {
     private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     private var deviceId: String = ""
-    private var currentContacts = mutableMapOf<String, EmergencyContact>()
+    private var allContacts = mutableMapOf<String, EmergencyContact>()
     private var selectedContactKey: String? = null
 
     override fun onCreateView(
@@ -51,23 +51,21 @@ class ContactsFragment : Fragment() {
 
         // Contact Cards logic
         binding.Contact1.setOnClickListener {
-            val contactsList = currentContacts.toList()
-            if (contactsList.isNotEmpty()) {
-                openUpdateContact(contactsList[0].first)
-            }
+            openUpdateContact("emgperson1")
         }
 
         binding.Contact2.setOnClickListener {
-            val contactsList = currentContacts.toList()
-            if (contactsList.size > 1) {
-                openUpdateContact(contactsList[1].first)
-            }
+            openUpdateContact("emgperson2")
+        }
+
+        binding.Contact3.setOnClickListener {
+            openUpdateContact("emgperson3")
         }
 
         // Add Contact Button logic
         binding.btnAddContact.setOnClickListener {
-            val contactCount = currentContacts.size
-            if (contactCount >= 3) {
+            val emptySlotCount = countEmptySlots()
+            if (emptySlotCount == 0) {
                 Toast.makeText(requireContext(), "Maximum 3 contacts allowed", Toast.LENGTH_SHORT).show()
             } else {
                 openAddContact()
@@ -96,9 +94,9 @@ class ContactsFragment : Fragment() {
             addNewContact()
         }
 
-        // Delete Contact Button
+        // Delete Contact Button - CHANGED to clear instead of delete
         binding.btnDeleteContact.setOnClickListener {
-            deleteContact()
+            clearContact()
         }
     }
 
@@ -134,40 +132,45 @@ class ContactsFragment : Fragment() {
 
         deviceRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                currentContacts.clear()
+                if (!isAdded || _binding == null) return // Add this check
 
-                for (contactSnapshot in snapshot.children) {
-                    val key = contactSnapshot.key ?: continue
+                allContacts.clear()
 
-                    // Parse the contact data
+                for (i in 1..3) {
+                    val key = "emgperson$i"
+                    val contactSnapshot = snapshot.child(key)
+
                     val fname = contactSnapshot.child("fname").getValue(String::class.java) ?: ""
                     val lname = contactSnapshot.child("lname").getValue(String::class.java) ?: ""
                     val relationship = contactSnapshot.child("relationship").getValue(String::class.java) ?: ""
                     val contact = contactSnapshot.child("contact").getValue(String::class.java) ?: ""
 
-                    if (fname.isNotEmpty() || lname.isNotEmpty()) {
-                        currentContacts[key] = EmergencyContact(fname, lname, relationship, contact)
-                    }
+                    allContacts[key] = EmergencyContact(fname, lname, relationship, contact)
                 }
 
                 updateUI()
             }
 
             override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || _binding == null) return // Add this check
+
                 Toast.makeText(requireContext(), "Failed to load contacts: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun updateUI() {
-        val contactsList = currentContacts.toList()
+        if (!isAdded || _binding == null) return // Add this check
 
-        // Update contact count
-        binding.contactCount.text = "${currentContacts.size}/3"
+        val filledContactsCount = allContacts.values.count {
+            it.fname.isNotEmpty() || it.lname.isNotEmpty()
+        }
+
+        binding.contactCount.text = "$filledContactsCount/3"
 
         // Update Contact 1
-        if (contactsList.isNotEmpty()) {
-            val (key1, contact1) = contactsList[0]
+        val contact1 = allContacts["emgperson1"]
+        if (contact1 != null && (contact1.fname.isNotEmpty() || contact1.lname.isNotEmpty())) {
             binding.contact1Name.text = "${contact1.fname} ${contact1.lname}"
             binding.contact1Relationship.text = contact1.relationship
             binding.contact1Phone.text = contact1.contact
@@ -177,8 +180,8 @@ class ContactsFragment : Fragment() {
         }
 
         // Update Contact 2
-        if (contactsList.size > 1) {
-            val (key2, contact2) = contactsList[1]
+        val contact2 = allContacts["emgperson2"]
+        if (contact2 != null && (contact2.fname.isNotEmpty() || contact2.lname.isNotEmpty())) {
             binding.contact2Name.text = "${contact2.fname} ${contact2.lname}"
             binding.contact2Relationship.text = contact2.relationship
             binding.contact2Phone.text = contact2.contact
@@ -187,16 +190,44 @@ class ContactsFragment : Fragment() {
             binding.Contact2.visibility = View.GONE
         }
 
-        // Show/hide add button
-        binding.btnAddContact.visibility = if (currentContacts.size < 3) View.VISIBLE else View.GONE
+        // Update Contact 3
+        val contact3 = allContacts["emgperson3"]
+        if (contact3 != null && (contact3.fname.isNotEmpty() || contact3.lname.isNotEmpty())) {
+            binding.contact3Name.text = "${contact3.fname} ${contact3.lname}"
+            binding.contact3Relationship.text = contact3.relationship
+            binding.contact3Phone.text = contact3.contact
+            binding.Contact3.visibility = View.VISIBLE
+        } else {
+            binding.Contact3.visibility = View.GONE
+        }
+
+        val emptySlots = countEmptySlots()
+        binding.btnAddContact.visibility = if (emptySlots > 0) View.VISIBLE else View.GONE
+    }
+
+    private fun countEmptySlots(): Int {
+        return allContacts.values.count {
+            it.fname.isEmpty() && it.lname.isEmpty()
+        }
+    }
+
+    private fun getFirstEmptySlot(): String? {
+        for (i in 1..3) {
+            val key = "emgperson$i"
+            val contact = allContacts[key]
+            if (contact != null && contact.fname.isEmpty() && contact.lname.isEmpty()) {
+                return key
+            }
+        }
+        return null
     }
 
     private fun openUpdateContact(contactKey: String) {
         selectedContactKey = contactKey
-        val contact = currentContacts[contactKey]
+        val contact = allContacts[contactKey]
 
         if (contact != null) {
-            // Pre-fill the update form
+            // Pre-fill the update form (even if empty)
             binding.updateRecipientFnameInput.setText(contact.fname)
             binding.updateRecipientLnameInput.setText(contact.lname)
             binding.updateRelationshipInput.setText(contact.relationship)
@@ -240,7 +271,7 @@ class ContactsFragment : Fragment() {
             .getReference("devices").child(deviceId)
             .child("emergencyContacts").child(selectedContactKey!!)
 
-        contactRef.setValue(updatedContact)  // Changed from updateChildren to setValue
+        contactRef.setValue(updatedContact)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Contact updated successfully!", Toast.LENGTH_SHORT).show()
                 binding.updateContactCard.visibility = View.GONE
@@ -267,7 +298,9 @@ class ContactsFragment : Fragment() {
             return
         }
 
-        if (currentContacts.size >= 3) {
+        // Find the first empty slot
+        val emptySlot = getFirstEmptySlot()
+        if (emptySlot == null) {
             Toast.makeText(requireContext(), "Maximum 3 contacts allowed", Toast.LENGTH_SHORT).show()
             return
         }
@@ -279,13 +312,9 @@ class ContactsFragment : Fragment() {
             "contact" to mobile
         )
 
-        // Determine the next contact key
-        val nextContactNumber = currentContacts.size + 1
-        val newContactKey = "emgperson$nextContactNumber"
-
         val contactRef = FirebaseDatabase.getInstance(databaseUrl)
             .getReference("devices").child(deviceId)
-            .child("emergencyContacts").child(newContactKey)
+            .child("emergencyContacts").child(emptySlot)
 
         contactRef.setValue(newContact)
             .addOnSuccessListener {
@@ -299,78 +328,41 @@ class ContactsFragment : Fragment() {
             }
     }
 
-    private fun deleteContact() {
+    private fun clearContact() {
         if (deviceId.isEmpty() || selectedContactKey == null) {
-            Toast.makeText(requireContext(), "Error deleting contact", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Error clearing contact", Toast.LENGTH_SHORT).show()
             return
         }
 
         // Show confirmation dialog
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Delete Contact")
-            .setMessage("Are you sure you want to delete this contact?")
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle("Clear Contact")
+            .setMessage("Are you sure you want to clear this contact's information?")
+            .setPositiveButton("Clear") { _, _ ->
+                // Create empty contact data
+                val emptyContact = mapOf(
+                    "fname" to "",
+                    "lname" to "",
+                    "relationship" to "",
+                    "contact" to ""
+                )
+
                 val contactRef = FirebaseDatabase.getInstance(databaseUrl)
                     .getReference("devices").child(deviceId)
                     .child("emergencyContacts").child(selectedContactKey!!)
 
-                contactRef.removeValue()
+                contactRef.setValue(emptyContact)
                     .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Contact deleted successfully!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Contact cleared successfully!", Toast.LENGTH_SHORT).show()
                         binding.updateContactCard.visibility = View.GONE
                         binding.dimOverlay.visibility = View.GONE
-
-                        // Reorganize remaining contacts
-                        reorganizeContacts()
                     }
                     .addOnFailureListener { exception ->
-                        Toast.makeText(requireContext(), "Failed to delete: ${exception.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Failed to clear: ${exception.message}", Toast.LENGTH_SHORT).show()
                     }
             }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-
-    private fun reorganizeContacts() {
-        if (deviceId.isEmpty()) return
-
-        val contactsRef = FirebaseDatabase.getInstance(databaseUrl)
-            .getReference("devices").child(deviceId).child("emergencyContacts")
-
-        contactsRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val contacts = mutableListOf<Map<String, String>>()
-
-                for (contactSnapshot in snapshot.children) {
-                    val fname = contactSnapshot.child("fname").getValue(String::class.java) ?: ""
-                    val lname = contactSnapshot.child("lname").getValue(String::class.java) ?: ""
-                    val relationship = contactSnapshot.child("relationship").getValue(String::class.java) ?: ""
-                    val contact = contactSnapshot.child("contact").getValue(String::class.java) ?: ""
-
-                    if (fname.isNotEmpty() || lname.isNotEmpty()) {
-                        contacts.add(mapOf(
-                            "fname" to fname,
-                            "lname" to lname,
-                            "relationship" to relationship,
-                            "contact" to contact
-                        ))
-                    }
-                }
-
-                // Clear all contacts
-                contactsRef.removeValue().addOnSuccessListener {
-                    // Re-add contacts with correct keys
-                    contacts.forEachIndexed { index, contactData ->
-                        val newKey = "emgperson${index + 1}"
-                        contactsRef.child(newKey).setValue(contactData)
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error
-            }
-        })
     }
 
     private fun clearAddContactInputs() {
