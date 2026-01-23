@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- Test Button (for development only) -->
-    <Button
+    <!-- Test Button (for testing notifications only) -->
+    <!-- Button
         android:id="@+id/btnCreateTestData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
         android:text="Create Test Notifications"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" -->
 
     <!-- Kebab Menu Button -->
     <ImageButton

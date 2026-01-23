@@ -45,9 +45,9 @@ class NotificationsFragment : Fragment() {
         getUserDeviceId()
 
         // Create Test Notifications button
-        binding.btnCreateTestData.setOnClickListener {
-            createTestNotificationsInFirebase()
-        }
+        // binding.btnCreateTestData.setOnClickListener {
+            // createTestNotificationsInFirebase()
+        // }
 
         // Dim Overlay
         binding.dimOverlay2.setOnClickListener {

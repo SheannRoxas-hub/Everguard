@@ -356,16 +356,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:value="2"
+                        android:valueFrom="1"
+                        android:valueTo="3"
+                        android:stepSize="1"
                         app:tickVisible="true"
                         app:thumbColor="#014d86"
                         app:trackColorActive="#014d86"
-                        android:valueFrom="50"
-                        android:valueTo="100"
                         android:contentDescription="@string/sensitivity_description"
                         app:layout_constraintTop_toBottomOf="@id/SensitivityLabel"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
-
                     <!-- Labels For Slider -->
                     <TextView
                         android:layout_width="wrap_content"
