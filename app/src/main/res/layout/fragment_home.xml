@@ -276,7 +276,7 @@
                         android:id="@+id/AgeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/age"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -287,7 +287,7 @@
                         android:id="@+id/recipientAge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/recipient_age"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -403,35 +403,6 @@
                         app:layout_constraintTop_toBottomOf="@id/sensitivitySlider"
                         android:layout_marginBottom="8dp"/>
 
-                    <!-- Device Alert Label -->
-                    <TextView
-                        android:id="@+id/tvDeviceAlertLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/device_alert"
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/deviceSettingsSeparator"/>
-
-                    <!-- Test Alert Button -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnTestAlert"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/test_alert"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        app:backgroundTint="#014d86"
-                        app:cornerRadius="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvDeviceAlertLabel"/>
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -542,14 +513,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/call"
                     app:backgroundTint="#014d86"
-                    app:cornerRadius="8dp" />
+                    app:cornerRadius="8dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="12dp"
                     android:text="@string/or"
-                    android:textColor="#757575" />
+                    android:textColor="#757575"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSms"
@@ -557,7 +528,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/send_sms"
                     app:backgroundTint="#014d86"
-                    app:cornerRadius="8dp" />
+                    app:cornerRadius="8dp"/>
+
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

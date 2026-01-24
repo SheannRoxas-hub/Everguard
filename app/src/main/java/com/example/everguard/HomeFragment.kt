@@ -106,11 +106,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Test Alert button
-        binding.btnTestAlert.setOnClickListener {
-            sendTestAlert()
-        }
-
         binding.homeKebabMenu.setOnClickListener { v ->
             showPopupMenu(v)
         }
@@ -223,7 +218,6 @@ class HomeFragment : Fragment() {
             }
         })
     }
-
     private fun updateBatteryIcon(batteryStatus: String) {
         // Extract percentage number from string like "85%" or "100%"
         val percentage = batteryStatus.replace("%", "").toIntOrNull() ?: 100
@@ -273,28 +267,6 @@ class HomeFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-    }
-
-    private fun sendTestAlert() {
-        if (firstEmergencyContactNumber.isEmpty()) {
-            Toast.makeText(
-                requireContext(),
-                "No emergency contact found",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        val sensitivityText = when (currentSensitivity) {
-            1 -> "Low"
-            2 -> "Medium"
-            3 -> "High"
-            else -> "Medium"
-        }
-
-        val message = "Test Alert worked. Sensitivity level set to $currentSensitivity ($sensitivityText)"
-
-        sendSMS(firstEmergencyContactNumber, message)
     }
 
     private fun loadRecentNotification() {
@@ -444,29 +416,75 @@ class HomeFragment : Fragment() {
 
     private fun openMapLocation(locationUrl: String) {
         try {
-            var url = locationUrl.trim()
+            // Remove escape characters and trim
+            var url = locationUrl
+                .trim()
+                .replace("\\\"", "\"")  // Remove escaped quotes
+                .replace("\"", "")       // Remove quotes
+                .replace("\\", "")       // Remove backslashes
+                .replace("\\s+".toRegex(), "") // Remove whitespace
 
-            // Remove any whitespace or newlines
-            url = url.replace("\\s+".toRegex(), "")
+            android.util.Log.d("MapLocation", "Cleaned URL: $url")
 
-            // Ensure URL has proper scheme
+            // Ensure URL has https://
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://$url"
             }
 
-            // Create intent with the URL
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(url)
+            android.util.Log.d("MapLocation", "Final URL: $url")
 
-            // Try to start the activity
-            if (intent.resolveActivity(requireActivity().packageManager) != null) {
-                startActivity(intent)
-            } else {
-                Toast.makeText(requireContext(), "No app available to open this link", Toast.LENGTH_SHORT).show()
+            // Validate URL
+            if (url.isEmpty() || url == "https://") {
+                Toast.makeText(requireContext(), "Invalid location URL", Toast.LENGTH_SHORT).show()
+                return
             }
+
+            val uri = Uri.parse(url)
+
+            // Method 1: Try to open in gmaps app with geo intent
+            if (url.contains("google.com/maps") || url.contains("maps.google.com")) {
+                // Extract coordinates if possible
+                val latLngPattern = "[@?](-?\\d+\\.\\d+),(-?\\d+\\.\\d+)".toRegex()
+                val match = latLngPattern.find(url)
+
+                if (match != null) {
+                    val lat = match.groupValues[1]
+                    val lng = match.groupValues[2]
+
+                    // Try geo intent first
+                    val geoIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:$lat,$lng?q=$lat,$lng"))
+                    geoIntent.setPackage("com.google.android.apps.maps")
+
+                    if (geoIntent.resolveActivity(requireActivity().packageManager) != null) {
+                        startActivity(geoIntent)
+                        return
+                    }
+                }
+            }
+
+            // Method 2: Open gmaps urls directly in maps
+            val mapsIntent = Intent(Intent.ACTION_VIEW, uri)
+            mapsIntent.setPackage("com.google.android.apps.maps")
+
+            if (mapsIntent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(mapsIntent)
+                return
+            }
+
+            // Method 3: Open in any browser
+            val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+            if (browserIntent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivity(browserIntent)
+                return
+            }
+
+            // Method 4: Create chooser as last resort
+            val chooserIntent = Intent.createChooser(Intent(Intent.ACTION_VIEW, uri), "Open location with")
+            startActivity(chooserIntent)
+
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Invalid URL: ${e.message}", Toast.LENGTH_SHORT).show()
-            e.printStackTrace()
+            Toast.makeText(requireContext(), "Could not open location: ${e.message}", Toast.LENGTH_SHORT).show()
+            android.util.Log.e("MapLocation", "Error opening location", e)
         }
     }
 
