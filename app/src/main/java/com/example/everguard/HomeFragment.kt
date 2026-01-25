@@ -222,12 +222,42 @@ class HomeFragment : Fragment() {
         // Extract percentage number from string like "85%" or "100%"
         val percentage = batteryStatus.replace("%", "").toIntOrNull() ?: 100
 
-        when {
-            percentage > 75 -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery_full)
-            percentage > 50 -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery_full)
-            percentage > 25 -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery)
-            else -> binding.BatteryIcon.setImageResource(R.drawable.ic_battery)
+        // 1. Determine the color and icon based on percentage
+        val (colorHex, iconRes) = when {
+            percentage >= 100 -> {
+                // Green - Full
+                "#4CAF50" to R.drawable.ic_battery_full
+            }
+            percentage >= 75 -> {
+                // Green - 3/4
+                "#4CAF50" to R.drawable.ic_battery_threefourth
+            }
+            percentage >= 50 -> {
+                // Yellow - Half
+                "#FBC02D" to R.drawable.ic_battery_half
+            }
+            percentage >= 25 -> {
+                // Orange - 1/4
+                "#FF9800" to R.drawable.ic_battery_onefourth
+            }
+            percentage > 0 -> {
+                // Red - Low
+                "#F44336" to R.drawable.ic_battery_onefourth
+            }
+            else -> {
+                // Red - 0% Alert
+                "#F44336" to R.drawable.ic_battery_zero
+            }
         }
+
+        // 2. Apply the background color to the CardView
+        binding.statusCard.setCardBackgroundColor(android.graphics.Color.parseColor(colorHex))
+
+        // 3. Apply the icon
+        binding.BatteryIcon.setImageResource(iconRes)
+
+        // 4. Update the text percent
+        binding.BatteryPercent.text = "$percentage%"
     }
 
     private fun loadFirstEmergencyContact(contacts: Map<String, EmergencyContact>) {

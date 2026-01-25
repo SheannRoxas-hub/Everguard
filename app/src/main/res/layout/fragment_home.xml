@@ -82,26 +82,18 @@
             android:padding="16dp">
 
             <!-- Device Status -->
-            <TextView
-                android:id="@+id/DeviceStatusLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/device_status"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
-                android:id="@+id/ConnectionStatus"
+                android:id="@+id/BatteryStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/status"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/DeviceStatusLabel"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Battery Icon and Percentage -->
             <ImageView

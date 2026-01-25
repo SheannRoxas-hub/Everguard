@@ -98,36 +98,6 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Show the edit profile card
-        binding.editProfileBtn.setOnClickListener {
-            android.transition.TransitionManager.beginDelayedTransition(binding.root)
-
-            if (binding.editProfileCardView.visibility == View.GONE) {
-                binding.editProfileCardView.visibility = View.VISIBLE
-                binding.editUsernameInput.setText(binding.helloUser.text.toString().replace("Hello, ", "").replace("!", ""))
-                binding.editEmailInput.setText(binding.email.text)
-            } else {
-                binding.editProfileCardView.visibility = View.GONE
-            }
-        }
-
-        // Back profile button click
-        binding.backEditProfileBtn.setOnClickListener {
-            android.transition.TransitionManager.beginDelayedTransition(binding.root)
-            binding.editProfileCardView.visibility = View.GONE
-        }
-
-        // Save profile button click
-        binding.updateProfileChangesBtn.setOnClickListener {
-            val newUsername = binding.editUsernameInput.text.toString().trim()
-            val newEmail = binding.editEmailInput.text.toString().trim()
-
-            if (newUsername.isNotEmpty() && newEmail.isNotEmpty()) {
-                updateUserProfile(newUsername, newEmail)
-            } else {
-                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
-            }
-        }
 
         setupDropdowns()
 
@@ -184,7 +154,7 @@ class ProfileActivity : AppCompatActivity() {
 
                     // Display password as asterisks (masked)
                     // Since we don't store password in database, we'll show a placeholder
-                    binding.password.setText("********")
+
                 }
             }
 
