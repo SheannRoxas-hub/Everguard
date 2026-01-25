@@ -76,7 +76,7 @@
             <!-- Form Fields -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/device_id_layout"
-                android:layout_width="330dp"
+                android:layout_width="315dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
                 app:errorIconDrawable="@null">

@@ -26,11 +26,11 @@
             style="@style/TextAppearance.Everguard.Title.Blue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="5dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="25dp"
             android:layout_marginTop="15dp"
             android:text="@string/reg_auth_title"
-            android:textSize="35sp"
+            android:textSize="30sp"
             />
 
         <TextView

@@ -230,7 +230,7 @@ class ContactsFragment : Fragment() {
             // Pre-fill the update form (even if empty)
             binding.updateRecipientFnameInput.setText(contact.fname)
             binding.updateRecipientLnameInput.setText(contact.lname)
-            binding.updateRelationshipInput.setText(contact.relationship)
+            binding.updateRelationshipInput.setText(contact.relationship, false)
             binding.updateMobileInput.setText(contact.contact)
 
             binding.updateContactCard.visibility = View.VISIBLE

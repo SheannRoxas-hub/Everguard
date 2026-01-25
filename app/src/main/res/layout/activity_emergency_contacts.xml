@@ -75,7 +75,7 @@
             <!-- Form Fields -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/first_name_layout"
-                android:layout_width="330dp"
+                android:layout_width="315dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
                 app:errorIconDrawable="@null">
@@ -94,7 +94,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/last_name_layout"
-                android:layout_width="330dp"
+                android:layout_width="315dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:errorIconDrawable="@null">
@@ -114,7 +114,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/relationship_layout"
                 style="@style/Widget.Everguard.Dropdown"
-                android:layout_width="330dp"
+                android:layout_width="315dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 app:errorIconDrawable="@null"
@@ -136,7 +136,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/mobile_number_layout"
-                android:layout_width="330dp"
+                android:layout_width="315dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:errorIconDrawable="@null">
