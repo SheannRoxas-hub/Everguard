@@ -44,7 +44,7 @@ class NotificationAdapter(
         } else {
             when {
                 notification.type.contains("Fall", ignoreCase = true) ||
-                        notification.type.contains("Accident", ignoreCase = true) -> 0xFFFF914D.toInt() // Yellow/Orange
+                        notification.type.contains("Accident", ignoreCase = true) -> 0xFFDC3030.toInt() // Red
                 notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt() // Red
                 notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt() // Dark Red
                 else -> 0xFFFF914D.toInt()
