@@ -88,8 +88,8 @@
     <string name="menu">Menu</string>
     <string name="logout">Logout</string>
     <string name="user_profile">User Profile</string>
-    <string name="device_status">Device Status:</string>
-    <string name="status">Connected</string>
+    <string name="device_status">Status:</string>
+    <string name="status">Battery Status:</string>
     <string name="battery">100%</string>
     <string name="recent_alert">Recent Alert</string>
     <string name="alert_description">A fall has been detected!</string>
