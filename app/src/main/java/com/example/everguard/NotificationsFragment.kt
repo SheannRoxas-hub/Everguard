@@ -30,6 +30,8 @@ class NotificationsFragment : Fragment() {
     private var notifications = mutableListOf<Notification>()
     private lateinit var notificationAdapter: NotificationAdapter
     private var deviceId: String = ""
+    private var lastNotifiedDate: String = ""
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -126,6 +128,18 @@ class NotificationsFragment : Fragment() {
                     if (notifDeviceId == deviceId) {
                         val notification = Notification(type, title, description, location, date, deviceId = notifDeviceId, readBy = listOf())
                         notifications.add(notification)
+
+                        val notificationDate = parseNotificationDate(date)
+                        val diffInSeconds = (Date().time - notificationDate.time) / 1000
+
+                        // 2. Check if it's new AND we haven't already notified for this exact timestamp
+                        if (diffInSeconds < 30 && date != lastNotifiedDate) {
+                            lastNotifiedDate = date // Update the tracker
+
+                            // 3. Trigger the Local Notification
+                            val notificationHelper = NotificationHelper(requireContext())
+                            notificationHelper.sendLocalNotification(title, description)
+                        }
                     }
                 }
 
