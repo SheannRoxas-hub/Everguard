@@ -84,7 +84,7 @@
             <!-- Device Status -->
 
             <TextView
-                android:id="@+id/ConnectionStatus"
+                android:id="@+id/BatteryStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/status"
