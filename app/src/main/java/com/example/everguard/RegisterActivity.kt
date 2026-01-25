@@ -22,6 +22,28 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+
+        // If user is already logged in and has verified their email
+        if (currentUser != null) {
+            if (currentUser.isEmailVerified) {
+                // If verified, go to Home/Profile
+                startActivity(Intent(this, HomeNotificationsContactsActivity::class.java))
+                finish()
+            } else {
+                // If logged in but NOT verified, go to the verification waiting screen
+                startActivity(Intent(this, RegAuthActivity::class.java))
+                finish()
+            }
+        }
+    }
+
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

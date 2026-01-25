@@ -29,6 +29,7 @@ class HomeFragment : Fragment() {
     private val databaseUrl = "https://everguard-2ea86-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     private var recipientPhoneNumber: String = ""
+    private var lastNotifiedDate: String = ""
     private var deviceId: String = ""
     private var firstEmergencyContactNumber: String = ""
     private var currentSensitivity: Int = 2
@@ -345,6 +346,18 @@ class HomeFragment : Fragment() {
                                     readBy = listOf()
                                 )
                                 notifications.add(notification)
+
+                                val notificationDate = parseNotificationDate(date)
+                                val diffInSeconds = (Date().time - notificationDate.time) / 1000
+
+                                // 2. Check if it's new AND we haven't already notified for this exact timestamp
+                                if (diffInSeconds < 30 && date != lastNotifiedDate) {
+                                    lastNotifiedDate = date // Update the tracker
+
+                                    // 3. Trigger the Local Notification
+                                    val notificationHelper = NotificationHelper(requireContext())
+                                    notificationHelper.sendLocalNotification(title, description)
+                                }
                             }
                         }
 
