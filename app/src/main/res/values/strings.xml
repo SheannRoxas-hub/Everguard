@@ -12,7 +12,7 @@
     <string name="welcome">Welcome!</string>
     <string name="tagline">Their safety starts here, let\'s take the first step.</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="terms_and_conditions"><![CDATA[I agree to the Terms & Conditions.]]></string>
+    <string name="terms_and_conditions"><![CDATA[I agree to the Terms and Conditions]]></string>
     <string name="get_started">Get Started</string>
     <string name="Login_option">Already have an account?</string>
 
@@ -113,11 +113,6 @@
     <string name="sample_location">google.maps.com/latx.laty</string>
     <string name="sensitivity_description">Detection sensitivity level</string>
 
-
-
-
-
-
     <string name="add_contact">Add Contact</string>
     <string name="update_contact">Update Contact</string>
     <string name="sample_contact1_name">Sheann Roxas</string>
@@ -127,7 +122,6 @@
     <string name="sample_contact1_number">09606 814 352</string>
     <string name="sample_contact2_number">0967 676 767</string>
     <string name="sample_counter">2/3</string>
-
 
     <string name="SOS_alert">SOS Alert</string>
     <string name="low_battery">Low Battery Alert</string>
@@ -139,5 +133,7 @@
     <string name="alert_time_3h">3 hours ago</string>
     <string name="add">Add</string>
 
+    <string name="terms_title">Everguard Terms and Conditions</string>
+    <string name="back_register">Back to Register</string>
 
 </resources>

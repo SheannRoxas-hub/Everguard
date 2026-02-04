@@ -1,6 +1,8 @@
 package com.example.everguard
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.everguard.databinding.FragmentNotificationsBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -31,7 +34,8 @@ class NotificationsFragment : Fragment() {
     private lateinit var notificationAdapter: NotificationAdapter
     private var deviceId: String = ""
     private var lastNotifiedDate: String = ""
-
+    private var recipientPhoneNumber: String = "" // CHANGED: Use recipient number instead
+    private val CALL_PERMISSION_CODE = 100
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,13 +58,21 @@ class NotificationsFragment : Fragment() {
             binding.dimOverlay2.visibility = View.GONE
         }
 
-        // Call/SMS logic
+        // Call/SMS logic - Call the recipient (care person)
         binding.btnCall2.setOnClickListener {
-            Toast.makeText(requireContext(), "Calling emergency contact...", Toast.LENGTH_SHORT).show()
+            if (recipientPhoneNumber.isNotEmpty()) {
+                makePhoneCall(recipientPhoneNumber)
+            } else {
+                Toast.makeText(requireContext(), "No phone number available", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.btnSms2.setOnClickListener {
-            Toast.makeText(requireContext(), "Sending SMS...", Toast.LENGTH_SHORT).show()
+            if (recipientPhoneNumber.isNotEmpty()) {
+                sendSMS(recipientPhoneNumber, "Emergency alert from Everguard app!")
+            } else {
+                Toast.makeText(requireContext(), "No phone number available", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Kebab Menu Logic
@@ -92,6 +104,7 @@ class NotificationsFragment : Fragment() {
 
                 if (deviceId.isNotEmpty()) {
                     loadNotifications()
+                    loadRecipientContact() // CHANGED: Load recipient contact instead
                 } else {
                     Toast.makeText(requireContext(), "No device paired", Toast.LENGTH_SHORT).show()
                     binding.notificationsRecyclerView.visibility = View.GONE
@@ -105,6 +118,31 @@ class NotificationsFragment : Fragment() {
         })
     }
 
+    // CHANGED: Load recipient (care person) contact
+    private fun loadRecipientContact() {
+        val userId = auth.currentUser?.uid ?: return
+
+        val userRef = FirebaseDatabase.getInstance(databaseUrl)
+            .getReference("users").child(userId)
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || _binding == null) return
+
+                val user = snapshot.getValue(User::class.java)
+                user?.carePerson?.let { carePerson ->
+                    recipientPhoneNumber = carePerson.contact
+                    android.util.Log.d("NotificationsFragment", "Recipient contact loaded: $recipientPhoneNumber")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                if (!isAdded || _binding == null) return
+                android.util.Log.e("NotificationsFragment", "Failed to load recipient contact: ${error.message}")
+            }
+        })
+    }
+
     private fun loadNotifications() {
         if (deviceId.isEmpty()) return
 
@@ -113,7 +151,7 @@ class NotificationsFragment : Fragment() {
 
         notifsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!isAdded || _binding == null) return // Add this check
+                if (!isAdded || _binding == null) return
 
                 notifications.clear()
 
@@ -132,11 +170,8 @@ class NotificationsFragment : Fragment() {
                         val notificationDate = parseNotificationDate(date)
                         val diffInSeconds = (Date().time - notificationDate.time) / 1000
 
-                        // 2. Check if it's new AND we haven't already notified for this exact timestamp
                         if (diffInSeconds < 30 && date != lastNotifiedDate) {
-                            lastNotifiedDate = date // Update the tracker
-
-                            // 3. Trigger the Local Notification
+                            lastNotifiedDate = date
                             val notificationHelper = NotificationHelper(requireContext())
                             notificationHelper.sendLocalNotification(title, description)
                         }
@@ -157,8 +192,7 @@ class NotificationsFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                if (!isAdded || _binding == null) return // Add this check
-
+                if (!isAdded || _binding == null) return
                 Toast.makeText(requireContext(), "Failed to load notifications", Toast.LENGTH_SHORT).show()
             }
         })
@@ -173,7 +207,7 @@ class NotificationsFragment : Fragment() {
         // Display location as clickable link with user-friendly text
         if (notification.location.isNotEmpty()) {
             binding.AlertLocationPop2.text = "View Location on Map"
-            binding.AlertLocationPop2.setTextColor(0xFF0066CC.toInt()) // Blue color for link
+            binding.AlertLocationPop2.setTextColor(0xFF0066CC.toInt())
             binding.AlertLocationPop2.paintFlags = binding.AlertLocationPop2.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
             binding.AlertLocationPop2.setOnClickListener {
                 openMapLocation(notification.location)
@@ -190,14 +224,14 @@ class NotificationsFragment : Fragment() {
 
         // Set color based on type and age
         val color = if (isOld) {
-            0xFF808080.toInt() // Grey for old notifications
+            0xFF808080.toInt()
         } else {
             when {
                 notification.type.contains("Fall", ignoreCase = true) ||
-                        notification.type.contains("Accident", ignoreCase = true) -> 0xFFDC3030.toInt() // Red
-                notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt() // Red
-                notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt() // Dark Red
-                else -> 0xFFFF914D.toInt() // Default yellow/orange
+                        notification.type.contains("Accident", ignoreCase = true) -> 0xFFDC3030.toInt()
+                notification.type.contains("SOS", ignoreCase = true) -> 0xFFDC3030.toInt()
+                notification.type.contains("Battery", ignoreCase = true) -> 0xFF910000.toInt()
+                else -> 0xFFFF914D.toInt()
             }
         }
 
@@ -208,26 +242,79 @@ class NotificationsFragment : Fragment() {
         binding.dimOverlay2.visibility = View.VISIBLE
     }
 
+    private fun makePhoneCall(phoneNumber: String) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CALL_PHONE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.CALL_PHONE),
+                CALL_PERMISSION_CODE
+            )
+        } else {
+            val callIntent = Intent(Intent.ACTION_CALL)
+            callIntent.data = Uri.parse("tel:$phoneNumber")
+            startActivity(callIntent)
+        }
+    }
+
+    private fun sendSMS(phoneNumber: String, message: String) {
+        try {
+            val smsIntent = Intent(Intent.ACTION_VIEW)
+            smsIntent.data = Uri.parse("sms:$phoneNumber")
+            smsIntent.putExtra("sms_body", message)
+            startActivity(smsIntent)
+        } catch (e: Exception) {
+            Toast.makeText(
+                requireContext(),
+                "Failed to open SMS app: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            CALL_PERMISSION_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (recipientPhoneNumber.isNotEmpty()) {
+                        makePhoneCall(recipientPhoneNumber)
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Call permission denied",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
     private fun openMapLocation(locationUrl: String) {
         try {
-            // Remove escape characters and trim
             var url = locationUrl
                 .trim()
-                .replace("\\\"", "\"")  // Remove escaped quotes
-                .replace("\"", "")       // Remove quotes
-                .replace("\\", "")       // Remove backslashes
-                .replace("\\s+".toRegex(), "") // Remove whitespace
+                .replace("\\\"", "\"")
+                .replace("\"", "")
+                .replace("\\", "")
+                .replace("\\s+".toRegex(), "")
 
             android.util.Log.d("MapLocation", "Cleaned URL: $url")
 
-            // Ensure URL has https://
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://$url"
             }
 
             android.util.Log.d("MapLocation", "Final URL: $url")
 
-            // Validate URL
             if (url.isEmpty() || url == "https://") {
                 Toast.makeText(requireContext(), "Invalid location URL", Toast.LENGTH_SHORT).show()
                 return
@@ -235,9 +322,7 @@ class NotificationsFragment : Fragment() {
 
             val uri = Uri.parse(url)
 
-            // Method 1: Try to open in Google Maps app with geo intent
             if (url.contains("google.com/maps") || url.contains("maps.google.com")) {
-                // Extract coordinates if possible
                 val latLngPattern = "[@?](-?\\d+\\.\\d+),(-?\\d+\\.\\d+)".toRegex()
                 val match = latLngPattern.find(url)
 
@@ -245,7 +330,6 @@ class NotificationsFragment : Fragment() {
                     val lat = match.groupValues[1]
                     val lng = match.groupValues[2]
 
-                    // Try geo intent first
                     val geoIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:$lat,$lng?q=$lat,$lng"))
                     geoIntent.setPackage("com.google.android.apps.maps")
 
@@ -256,7 +340,6 @@ class NotificationsFragment : Fragment() {
                 }
             }
 
-            // Method 2: Try to open the Google Maps URL directly in Maps app
             val mapsIntent = Intent(Intent.ACTION_VIEW, uri)
             mapsIntent.setPackage("com.google.android.apps.maps")
 
@@ -265,14 +348,12 @@ class NotificationsFragment : Fragment() {
                 return
             }
 
-            // Method 3: Open in any browser
             val browserIntent = Intent(Intent.ACTION_VIEW, uri)
             if (browserIntent.resolveActivity(requireActivity().packageManager) != null) {
                 startActivity(browserIntent)
                 return
             }
 
-            // Method 4: Create chooser as last resort
             val chooserIntent = Intent.createChooser(Intent(Intent.ACTION_VIEW, uri), "Open location with")
             startActivity(chooserIntent)
 
@@ -282,14 +363,13 @@ class NotificationsFragment : Fragment() {
         }
     }
 
-
     private fun isNotificationOld(dateStr: String): Boolean {
         val notificationDate = parseNotificationDate(dateStr)
         val now = Date()
         val diffInMillis = now.time - notificationDate.time
         val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
 
-        return diffInDays >= 1 // 1 day or older
+        return diffInDays >= 1
     }
 
     private fun parseNotificationDate(dateStr: String): Date {

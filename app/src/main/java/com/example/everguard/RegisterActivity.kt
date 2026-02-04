@@ -2,10 +2,17 @@ package com.example.everguard
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Patterns
+import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.color
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputLayout
@@ -67,6 +74,38 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
+
+        val checkBox = binding.termsCheckbox
+        val fullText = "I agree to the Terms and Conditions"
+        val spannableString = SpannableString(fullText)
+
+        val clickablePart = "Terms and Conditions"
+        val startIndex = fullText.indexOf(clickablePart)
+        val endIndex = startIndex + clickablePart.length
+
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(this@RegisterActivity, TermsActivity::class.java)
+                startActivity(intent)
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = true // Optional: underline the link
+                ds.color = getColor(R.color.everguard_blue_dark) // Change link color
+            }
+        }
+
+        spannableString.setSpan(
+            clickableSpan,
+            startIndex,
+            endIndex,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+// IMPORTANT: This line makes the link actually clickable
+        checkBox.text = spannableString
+        checkBox.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun setupListeners() {
@@ -121,7 +160,7 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                showError(binding.emailLayout, "Invalid email required")
+                showError(binding.emailLayout, "Invalid email format")
                 binding.emailInput.requestFocus()
             }
 
