@@ -5,107 +5,99 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TermsActivity"> <!-- Changed from .RegisterActivity to .TermsActivity -->
+    android:background="#FFFFFF"
+    tools:context=".TermsActivity">
 
-    <LinearLayout
+    <!-- ScrollView now wraps a single content container -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        tools:ignore="UselessParent">
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay">
 
-        <ImageView
-            android:layout_width="180dp"
-            android:layout_height="100dp"
-            android:layout_gravity="start"
-            android:importantForAccessibility="no"
-            android:src="@drawable/design_top" />
-
-        <!-- Logo Section -->
+        <!-- This is the single child that holds ALL content -->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingHorizontal="0dp">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:contentDescription="@string/everguard_logo"
-                android:src="@drawable/blue_logo" />
+                android:layout_width="180dp"
+                android:layout_height="100dp"
+                android:layout_gravity="start"
+                android:layout_marginStart="-25dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/design_top" />
+
+            <!-- Logo Section -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@string/everguard_logo"
+                    android:src="@drawable/blue_logo" />
+
+                <TextView
+                    style="@style/TextAppearance.Everguard.Title.Blue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="@string/everguard"
+                    android:textSize="25sp" />
+            </LinearLayout>
 
             <TextView
                 style="@style/TextAppearance.Everguard.Title.Blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="@string/everguard"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="@string/terms_title"
                 android:textSize="25sp" />
-        </LinearLayout>
 
-        <TextView
-            style="@style/TextAppearance.Everguard.Title.Blue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/terms_title"
-            android:layout_marginTop="15dp"
-            android:textSize="25sp"
-            android:gravity="center" />
-
-        <!-- Scrollable Terms Content -->
-        <!-- Scrollable Terms Content -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginHorizontal="25dp"
-            android:layout_marginTop="20dp"
-            android:fadeScrollbars="false"
-            android:scrollbarStyle="outsideOverlay"
-            >
-
-            <!-- A ScrollView can only have ONE child. We use a LinearLayout to hold multiple views. -->
-            <LinearLayout
+            <!-- The entire text block -->
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="vertical"
-                >
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:lineSpacingExtra="4dp"
+                android:paddingHorizontal="25dp"
+                android:text="Project: Everguard IoT Fall Detection &amp; Emergency Alert System\n\nPlease read these Terms and Conditions (&quot;Terms&quot;) carefully before using the Everguard Wearable Device and associated Mobile/Web Application (collectively, the &quot;System&quot;). By using this System, you agree to be bound by these Terms.\n\n1. Nature of the System\nEverguard is an experimental IoT prototype designed to assist in the detection of falls and the dispatch of emergency notifications. It utilizes accelerometer sensors, GPS, GSM (SMS), and Cloud (Firebase) technologies to provide automated alerts.\n\n2. Not a Medical Device\nDisclaimer: Everguard is NOT a certified medical device and is not intended to replace professional medical monitoring, human supervision, or emergency services (e.g., 911/999).\n\nBest Effort: The fall detection algorithm is based on mathematical thresholds. You acknowledge that no algorithm can detect 100% of falls and that false positives (alerts when no fall occurred) or false negatives (no alert when a fall occurred) may occur.\n\n3. Critical Dependencies &amp; Reliability\nThe &quot;Transaction&quot; of an alert depends on several factors outside of Everguard’s control. You acknowledge that the system may fail to send alerts due to:\n\n• Network Coverage: Lack of GSM/Cellular signal for SMS or Lack of WiFi/Data for Cloud logging.\n• Hardware State: Low battery, sensor misalignment, or physical damage to the device.\n• GPS Accuracy: Satellite signal interference which may result in inaccurate location data.\n• Maintenance: Failure of the user to keep the SIM card loaded with credit/prepaid load for SMS transactions.\n\n4. Data Privacy &amp; Transactions\n• Data Collection: The system records &quot;Safety Transactions,&quot; including timestamps, GPS coordinates, and device health (battery status).\n• Cloud Storage: Data is stored using Google Firebase. While we implement security protocols, you acknowledge that no cloud storage is 100% secure.\n• Contact Information: You are responsible for the accuracy of the emergency contact numbers stored in the System’s NVS (Non-Volatile Storage).\n\n5. Limitation of Liability\nTo the maximum extent permitted by law, the Everguard Project Team shall not be liable for any injury, death, or property damage resulting from:\n• The failure of the device to detect a fall.\n• Delays in SMS or Cloud notification delivery.\n• Inaccurate GPS location data.\n• Reliance on the device as a sole means of safety.\n\n6. User Responsibilities\n• Calibration: Users must follow the calibration success tones to ensure the sensor is correctly oriented.\n• Testing: Users should periodically perform a &quot;Manual SOS&quot; test to ensure the GSM and WiFi transactions are functional.\n• Charging: The user is responsible for maintaining the battery levels as reported by the system’s heartbeat logs.\n\n7. Emergency Grace Period\nThe system includes a 10-second &quot;Grace Period&quot; during which an alert can be canceled manually. You understand that if the system is canceled during this window, no cloud transaction or SMS will be dispatched.\n\nBY USING THE EVERGUARD SYSTEM, YOU ACKNOWLEDGE THAT YOU HAVE READ THESE TERMS AND UNDERSTAND THE LIMITATIONS OF THIS PROTOTYPE TECHNOLOGY."
+                android:textColor="@color/black"
+                android:textSize="13sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="4dp"
-                    android:textColor="@color/black"
-                    android:textSize="13sp"
-                    android:text="Project: Everguard IoT Fall Detection &amp; Emergency Alert System\n\nPlease read these Terms and Conditions (&quot;Terms&quot;) carefully before using the Everguard Wearable Device and associated Mobile/Web Application (collectively, the &quot;System&quot;). By using this System, you agree to be bound by these Terms.\n\n1. Nature of the System\nEverguard is an experimental IoT prototype designed to assist in the detection of falls and the dispatch of emergency notifications. It utilizes accelerometer sensors, GPS, GSM (SMS), and Cloud (Firebase) technologies to provide automated alerts.\n\n2. Not a Medical Device\nDisclaimer: Everguard is NOT a certified medical device and is not intended to replace professional medical monitoring, human supervision, or emergency services (e.g., 911/999).\n\nBest Effort: The fall detection algorithm is based on mathematical thresholds. You acknowledge that no algorithm can detect 100% of falls and that false positives (alerts when no fall occurred) or false negatives (no alert when a fall occurred) may occur.\n\n3. Critical Dependencies &amp; Reliability\nThe &quot;Transaction&quot; of an alert depends on several factors outside of Everguard’s control. You acknowledge that the system may fail to send alerts due to:\n\n• Network Coverage: Lack of GSM/Cellular signal for SMS or Lack of WiFi/Data for Cloud logging.\n• Hardware State: Low battery, sensor misalignment, or physical damage to the device.\n• GPS Accuracy: Satellite signal interference which may result in inaccurate location data.\n• Maintenance: Failure of the user to keep the SIM card loaded with credit/prepaid load for SMS transactions.\n\n4. Data Privacy &amp; Transactions\n• Data Collection: The system records &quot;Safety Transactions,&quot; including timestamps, GPS coordinates, and device health (battery status).\n• Cloud Storage: Data is stored using Google Firebase. While we implement security protocols, you acknowledge that no cloud storage is 100% secure.\n• Contact Information: You are responsible for the accuracy of the emergency contact numbers stored in the System’s NVS (Non-Volatile Storage).\n\n5. Limitation of Liability\nTo the maximum extent permitted by law, the Everguard Project Team shall not be liable for any injury, death, or property damage resulting from:\n• The failure of the device to detect a fall.\n• Delays in SMS or Cloud notification delivery.\n• Inaccurate GPS location data.\n• Reliance on the device as a sole means of safety.\n\n6. User Responsibilities\n• Calibration: Users must follow the calibration success tones to ensure the sensor is correctly oriented.\n• Testing: Users should periodically perform a &quot;Manual SOS&quot; test to ensure the GSM and WiFi transactions are functional.\n• Charging: The user is responsible for maintaining the battery levels as reported by the system’s heartbeat logs.\n\n7. Emergency Grace Period\nThe system includes a 10-second &quot;Grace Period&quot; during which an alert can be canceled manually. You understand that if the system is canceled during this window, no cloud transaction or SMS will be dispatched.\n\nBY USING THE EVERGUARD SYSTEM, YOU ACKNOWLEDGE THAT YOU HAVE READ THESE TERMS AND UNDERSTAND THE LIMITATIONS OF THIS PROTOTYPE TECHNOLOGY." />
+            <!-- This button is now at the very end of all the text -->
+            <Button
+                android:id="@+id/back_to_register_btn"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="25dp"
+                android:padding="10dp"
+                android:text="@string/back_register"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                app:backgroundTint="@color/everguard_blue_dark" />
 
-                <!-- This button is now at the very bottom of the scroll -->
-                <Button
-                    android:id="@+id/back_to_register_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="25dp"
-                    android:padding="10dp"
-                    android:text="@string/back_register"
-                    android:textColor="@color/white"
-                    android:textSize="17sp"
-                    app:backgroundTint="@color/everguard_blue_dark" />
+            <ImageView
+                android:layout_width="173dp"
+                android:layout_height="100dp"
+                android:layout_gravity="right"
+                android:importantForAccessibility="no"
+                android:src="@drawable/design_bottom" />
 
-            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
-        </ScrollView>
+    <!-- The bottom design stays pinned to the corner of the screen -->
 
-    </LinearLayout>
-
-    <ImageView
-        android:layout_width="173dp"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:importantForAccessibility="no"
-        android:src="@drawable/design_bottom" />
 
 </RelativeLayout>

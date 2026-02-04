@@ -1,3 +1,4 @@
+package com.example.everguard
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +29,7 @@ class TermsActivity : AppCompatActivity() {
         // Handle system bar padding (prevents text from being hidden under the clock/status bar)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
 
