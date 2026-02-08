@@ -102,25 +102,24 @@ class ProfileActivity : AppCompatActivity() {
         setupDropdowns()
 
         // Show the edit recipient card
-        binding.backEditRecipientBtn.setOnClickListener {
-            android.transition.TransitionManager.beginDelayedTransition(binding.root)
+        binding.editRecipBtn.setOnClickListener {
+            binding.editRecipientCardView.visibility = View.VISIBLE
+            binding.dimOverlay.visibility = View.VISIBLE
 
-            if (binding.editRecipientCardView.visibility == View.GONE) {
-                binding.editRecipientCardView.visibility = View.VISIBLE
-                binding.editRecipientFnameInput.setText(binding.recipientFname.text)
-                binding.editRecipientLnameInput.setText(binding.recipientLname.text)
-                binding.editRecipientBdateInput.setText(binding.recipientBdate.text)
-                binding.editRecipientGenderInput.setText(binding.recipientGender.text)
-                binding.editRecipientContactInput.setText(binding.recipientContact.text)
-            } else {
-                binding.editRecipientCardView.visibility = View.GONE
-            }
+
+            binding.editRecipientFnameInput.setText(binding.recipientFname.text)
+            binding.editRecipientLnameInput.setText(binding.recipientLname.text)
+            binding.editRecipientBdateInput.setText(binding.recipientBdate.text)
+            binding.editRecipientGenderInput.setText(binding.recipientGender.text)
+            binding.editRecipientContactInput.setText(binding.recipientContact.text)
+
         }
 
         // Back recipient button click
         binding.backEditRecipientBtn.setOnClickListener {
-            android.transition.TransitionManager.beginDelayedTransition(binding.root)
             binding.editRecipientCardView.visibility = View.GONE
+            binding.dimOverlay.visibility = View.GONE
+
         }
 
         // Save Recipient button click

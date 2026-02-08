@@ -3,8 +3,12 @@ package com.example.everguard
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -34,7 +38,19 @@ class HomeFragment : Fragment() {
     private var firstEmergencyContactNumber: String = ""
     private var currentSensitivity: Int = 2
     private val CALL_PERMISSION_CODE = 100
+
+    private var lastBatteryStatus = "0%"
+    private var lastHeardTime: Long = 0L
+    private var wasPreviouslyConnected: Boolean? = null // Use nullable to handle the initial state
+    private val heartbeatRunnable = object : Runnable {
+        override fun run() {
+            checkConnectionStatus()
+            handler.postDelayed(this, 30000) // Check every 30 seconds
+        }
+    }
     private val SMS_PERMISSION_CODE = 101
+    private val handler = Handler(Looper.getMainLooper())
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -200,65 +216,115 @@ class HomeFragment : Fragment() {
 
         deviceRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!isAdded || _binding == null) return // Add this check
+                if (!isAdded || _binding == null) return
 
-                val device = snapshot.getValue(Device::class.java)
-                device?.let {
-                    binding.BatteryPercent.text = it.batteryStatus
-                    updateBatteryIcon(it.batteryStatus)
-                    currentSensitivity = it.sensitivity
-                    binding.sensitivitySlider.value = it.sensitivity.toFloat()
-                    loadFirstEmergencyContact(it.emergencyContacts)
+                lastBatteryStatus = snapshot.child("batteryStatus").getValue(String::class.java) ?: "0%"
+                lastHeardTime = snapshot.child("lastHeard").getValue(Long::class.java) ?: 0L
+
+                // Trigger the check immediately when data arrives
+                checkConnectionStatus()
+
+                // Get emergency contacts
+                val contactsSnapshot = snapshot.child("emergencyContacts")
+                val contacts = mutableMapOf<String, EmergencyContact>()
+                for (contactSnap in contactsSnapshot.children) {
+                    val key = contactSnap.key
+                    val contact = contactSnap.getValue(EmergencyContact::class.java)
+                    if (key != null && contact != null) {
+                        contacts[key] = contact
+                    }
+                }
+                if (contacts.isNotEmpty()) {
+                    loadFirstEmergencyContact(contacts)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                if (!isAdded || _binding == null) return // Add this check
-
-                Toast.makeText(requireContext(), "Failed to load device data", Toast.LENGTH_SHORT).show()
+                if (isAdded) Toast.makeText(
+                    requireContext(),
+                    "Device error: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
-    private fun updateBatteryIcon(batteryStatus: String) {
-        // Extract percentage number from string like "85%" or "100%"
-        val percentage = batteryStatus.replace("%", "").toIntOrNull() ?: 100
 
-        // 1. Determine the color and icon based on percentage
-        val (colorHex, iconRes) = when {
-            percentage >= 100 -> {
-                // Green - Full
-                "#4CAF50" to R.drawable.ic_battery_full
+    override fun onResume() {
+        super.onResume()
+        handler.post(heartbeatRunnable) // Start the periodic check
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(heartbeatRunnable) // Stop to save battery
+    }
+
+    private fun checkConnectionStatus() {
+        if (lastHeardTime == 0L) return
+
+        val currentTime = System.currentTimeMillis()
+        val diffInMinutes = (currentTime - lastHeardTime) / (1000 * 60)
+        val isCurrentlyConnected = diffInMinutes < 2
+        val inactiveColor = "#545454"
+
+        // --- UPDATED NOTIFICATION LOGIC ---
+        // Use the variable from the Activity so it persists between fragment switches
+        if (HomeNotificationsContactsActivity.globalWasPreviouslyConnected != isCurrentlyConnected) {
+
+            // Don't notify on the very first load of the app (optional)
+            if (HomeNotificationsContactsActivity.globalWasPreviouslyConnected != null) {
+                val notificationHelper = NotificationHelper(requireContext())
+
+                if (isCurrentlyConnected) {
+                    notificationHelper.sendLocalNotification(
+                        "Device Connected",
+                        "Everguard device is now online and monitoring."
+                    )
+                } else {
+                    notificationHelper.sendLocalNotification(
+                        "Device Disconnected",
+                        "Everguard device has been offline for more than 2 minutes."
+                    )
+                    binding.sensitivitySlider.thumbTintList = ColorStateList.valueOf(Color.parseColor(inactiveColor))
+                    binding.sensitivitySlider.trackActiveTintList= ColorStateList.valueOf(Color.parseColor(inactiveColor))
+                }
             }
-            percentage >= 75 -> {
-                // Green - 3/4
-                "#4CAF50" to R.drawable.ic_battery_threefourth
-            }
-            percentage >= 50 -> {
-                // Yellow - Half
-                "#FBC02D" to R.drawable.ic_battery_half
-            }
-            percentage >= 25 -> {
-                // Orange - 1/4
-                "#FF9800" to R.drawable.ic_battery_onefourth
-            }
-            percentage > 0 -> {
-                // Red - Low
-                "#F44336" to R.drawable.ic_battery_onefourth
-            }
-            else -> {
-                // Red - 0% Alert
-                "#F44336" to R.drawable.ic_battery_zero
-            }
+
+            // Update the GLOBAL state
+            HomeNotificationsContactsActivity.globalWasPreviouslyConnected = isCurrentlyConnected
         }
 
-        // 2. Apply the background color to the CardView
-        binding.statusCard.setCardBackgroundColor(android.graphics.Color.parseColor(colorHex))
+        // Update UI
+        updateBatteryIcon(lastBatteryStatus, isCurrentlyConnected)
+        binding.sensitivitySlider.isEnabled = isCurrentlyConnected
+    }
 
-        // 3. Apply the icon
+    private fun updateBatteryIcon(batteryStatus: String, isConnected: Boolean = true) {
+        if (!isConnected) {
+            // DISCONNECTED STATE
+            binding.statusCard.setCardBackgroundColor(Color.parseColor("#9E9E9E")) // Gray
+            binding.BatteryIcon.setImageDrawable(null) // Icon none
+            binding.ConnectionStatus.text = "Not Connected"
+            binding.BatteryPercent.text = ""
+            return
+        }
+
+        // Extract percentage number
+        val percentage = batteryStatus.replace("%", "").toIntOrNull() ?: 100
+
+        val (colorHex, iconRes) = when {
+            percentage >= 100 -> "#4CAF50" to R.drawable.ic_battery_full
+            percentage >= 75 -> "#4CAF50" to R.drawable.ic_battery_threefourth
+            percentage >= 50 -> "#FBC02D" to R.drawable.ic_battery_half
+            percentage >= 25 -> "#FF9800" to R.drawable.ic_battery_onefourth
+            percentage > 0 -> "#F44336" to R.drawable.ic_battery_onefourth
+            else -> "#F44336" to R.drawable.ic_battery_zero
+        }
+
+        binding.statusCard.setCardBackgroundColor(Color.parseColor(colorHex))
         binding.BatteryIcon.setImageResource(iconRes)
-
-        // 4. Update the text percent
         binding.BatteryPercent.text = "$percentage%"
+        binding.ConnectionStatus.text = "Connected"
     }
 
     private fun loadFirstEmergencyContact(contacts: Map<String, EmergencyContact>) {
