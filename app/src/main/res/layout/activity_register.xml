@@ -142,8 +142,8 @@
             android:id="@+id/terms_checkbox"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
+            android:clickable="true"
             android:gravity="start|center_vertical"
-            android:text="@string/terms_and_conditions"
             android:textColor="@color/black"
             android:textSize="12sp"
             android:textStyle="bold" />

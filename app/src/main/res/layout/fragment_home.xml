@@ -21,37 +21,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Profile Image -->
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/home_profileImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:contentDescription="@string/sample_pfp"
-        android:src="@drawable/pfp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/CircleImage"/>
+
 
     <!-- Hello User -->
+
+    <!-- Kebab Menu Button -->
+
     <TextView
         android:id="@+id/helloUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="20dp"
         android:text="@string/hello_user"
-        android:textSize="25sp"
         android:textColor="@color/white"
-        app:layout_constraintStart_toEndOf="@id/home_profileImage"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Kebab Menu Button -->
     <ImageButton
         android:id="@+id/home_kebab_menu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="38dp"
+        android:layout_height="42dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="15dp"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -59,7 +50,7 @@
         android:src="@drawable/ic_more_vert"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#FFFFFF"/>
+        app:tint="#FFFFFF" />
 
     <!-- Status Card -->
     <com.google.android.material.card.MaterialCardView
@@ -78,13 +69,27 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="83dp"
             android:padding="16dp">
 
             <!-- Device Status -->
 
+            <!-- Battery Icon and Percentage -->
             <TextView
-                android:id="@+id/BatteryStatus"
+                android:id="@+id/DeviceStatusTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/device_status"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/ConnectionStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/status"
@@ -93,19 +98,8 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- Battery Icon and Percentage -->
-            <ImageView
-                android:id="@+id/BatteryIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_battery_full"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/BatteryPercent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/white"/>
+                app:layout_constraintVertical_bias="1.0" />
 
             <TextView
                 android:id="@+id/BatteryPercent"
@@ -117,7 +111,20 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.619" />
+
+            <ImageView
+                android:id="@+id/BatteryIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_battery_full"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/BatteryPercent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.592"
+                app:tint="@color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

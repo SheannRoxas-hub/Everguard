@@ -13,7 +13,12 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.everguard.databinding.ActivityHomeNotificationsContactsBinding
 
+
+
 class HomeNotificationsContactsActivity : AppCompatActivity() {
+    companion object {
+        var globalWasPreviouslyConnected: Boolean? = null
+    }
 
     private lateinit var binding: ActivityHomeNotificationsContactsBinding
 
