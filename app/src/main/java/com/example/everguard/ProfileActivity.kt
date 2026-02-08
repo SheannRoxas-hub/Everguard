@@ -110,7 +110,7 @@ class ProfileActivity : AppCompatActivity() {
             binding.editRecipientFnameInput.setText(binding.recipientFname.text)
             binding.editRecipientLnameInput.setText(binding.recipientLname.text)
             binding.editRecipientBdateInput.setText(binding.recipientBdate.text)
-            binding.editRecipientGenderInput.setText(binding.recipientGender.text)
+            binding.editRecipientGenderInput.setText(binding.recipientGender.text, false)
             binding.editRecipientContactInput.setText(binding.recipientContact.text)
 
         }
@@ -137,6 +137,7 @@ class ProfileActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
             }
+            binding.dimOverlay.visibility = View.GONE
         }
     }
 

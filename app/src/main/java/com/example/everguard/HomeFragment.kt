@@ -25,6 +25,7 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import androidx.core.graphics.toColorInt
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -265,7 +266,8 @@ class HomeFragment : Fragment() {
         val currentTime = System.currentTimeMillis()
         val diffInMinutes = (currentTime - lastHeardTime) / (1000 * 60)
         val isCurrentlyConnected = diffInMinutes < 2
-        val inactiveColor = "#545454"
+        val inactiveColor = "#545454".toColorInt()
+        val activeColor = "#014d86".toColorInt()
 
         // --- UPDATED NOTIFICATION LOGIC ---
         // Use the variable from the Activity so it persists between fragment switches
@@ -285,13 +287,22 @@ class HomeFragment : Fragment() {
                         "Device Disconnected",
                         "Everguard device has been offline for more than 2 minutes."
                     )
-                    binding.sensitivitySlider.thumbTintList = ColorStateList.valueOf(Color.parseColor(inactiveColor))
-                    binding.sensitivitySlider.trackActiveTintList= ColorStateList.valueOf(Color.parseColor(inactiveColor))
                 }
             }
 
             // Update the GLOBAL state
             HomeNotificationsContactsActivity.globalWasPreviouslyConnected = isCurrentlyConnected
+        }
+
+        // Update UI based on connection status
+        if (isCurrentlyConnected) {
+            // --- CONNECTED STATE ---
+            binding.sensitivitySlider.thumbTintList = ColorStateList.valueOf(activeColor)
+            binding.sensitivitySlider.trackActiveTintList = ColorStateList.valueOf(activeColor)
+        } else {
+            // --- DISCONNECTED STATE ---
+            binding.sensitivitySlider.thumbTintList = ColorStateList.valueOf(inactiveColor)
+            binding.sensitivitySlider.trackActiveTintList = ColorStateList.valueOf(inactiveColor)
         }
 
         // Update UI
